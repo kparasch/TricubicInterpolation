@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from tricubic_matrix import tricubicMat
 
 class Trilinear_Interpolation:
