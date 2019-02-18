@@ -3,12 +3,10 @@ from linear_interpolation import Trilinear_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
-plt.style.use('kostas')
+#plt.style.use('kostas')
 
 x,y,z = sympy.symbols('x y z')
-#f = sympy.cos(0.1*x*y*z+0.1) + 10*sympy.exp(-x*y*z/300.)
 f = (x - y + z + 10)**2
-#f = 0.0001*sympy.exp(-z)*(0.03*x**4-1.5*x**3)*y**3
 dfdx=sympy.diff(f,x)
 dfdy=sympy.diff(f,y)
 dfdz=sympy.diff(f,z)
@@ -59,7 +57,7 @@ Y = np.linspace(y0+dy,y0+(Ny-30)*dy,3000)
 Z = np.linspace(z0+dz,z0+(Nz-30)*dz,3000)
 
 fig=plt.figure(1,[18,12])
-fig.suptitle('red: tricubic interpolation, black: true')
+fig.suptitle('red: trilinear interpolation, black: true')
 
 ax1=fig.add_subplot(3,4,1)
 ax1.plot(X, lamf(X,y_obs,z_obs),'k')

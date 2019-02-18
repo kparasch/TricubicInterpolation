@@ -2,10 +2,9 @@ from tricubic_interpolation import Tricubic_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
-plt.style.use('kostas')
+#plt.style.use('kostas')
 
 x,y,z = sympy.symbols('x y z')
-#f = sympy.cos(0.1*x*y*z+0.1) + 10*sympy.exp(-x*y*z/300.)
 f = 0.0001*sympy.exp(-z)*(0.03*x**4-1.5*x**3)*y**3
 dfdx=sympy.diff(f,x)
 dfdy=sympy.diff(f,y)
@@ -87,22 +86,22 @@ ax4.set_title('df/dz')
 ax5=fig.add_subplot(3,4,5)
 ax5.plot(Y, lamf(x_obs,Y,z_obs),'k')
 ax5.plot(Y, np.array([ip.val(x_obs,i,z_obs) for i in Y]),'r')
-ax5.set_xlabel('y')
+ax5.set_xlabel('y',labelpad=-4)
 
 ax6=fig.add_subplot(3,4,6)
 ax6.plot(Y, lamdfdx(x_obs, Y, z_obs),'k')
 ax6.plot(Y, np.array([ip.ddx(x_obs,i,z_obs) for i in Y]),'r')
-ax6.set_xlabel('y')
+ax6.set_xlabel('y',labelpad=-4)
 
 ax7=fig.add_subplot(3,4,7)
 ax7.plot(Y, lamdfdy(x_obs,Y,z_obs),'k')
 ax7.plot(Y, np.array([ip.ddy(x_obs,i,z_obs) for i in Y]),'r')
-ax7.set_xlabel('y')
+ax7.set_xlabel('y',labelpad=-4)
 
 ax8=fig.add_subplot(3,4,8)
 ax8.plot(Y, lamdfdz(x_obs,Y,z_obs),'k')
 ax8.plot(Y, np.array([ip.ddz(x_obs,i,z_obs) for i in Y]),'r')
-ax8.set_xlabel('y')
+ax8.set_xlabel('y',labelpad=-4)
 
 
 ax9=fig.add_subplot(3,4,9)
