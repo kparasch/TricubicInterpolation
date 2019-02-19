@@ -21,7 +21,7 @@ z0 = 0.
 dx = 0.513
 dy = 0.1
 dz = 0.36
-discard_x = 1
+discard_x = 11
 discard_y = 1
 discard_z = 1
 Nx = 100
@@ -37,7 +37,8 @@ for i in range(Nx):
             zi=dz*k + z0
             A[i,j,k] = lamf(xi, yi, zi) 
 
-x_obs = 3.
+#default values of x,y,z when they are not variable
+x_obs = 7.
 y_obs = 2.
 z_obs = 2.
 
@@ -58,9 +59,9 @@ iy = int(y0)
 iz = int(z0)
 
 
-X = np.linspace(x0+dx,x0+(Nx-3)*dx,3000)
-Y = np.linspace(y0+dy,y0+(Ny-3)*dy,3000)
-Z = np.linspace(z0+dz,z0+(Nz-3)*dz,3000)
+X = np.linspace(x0+(1+discard_x)*dx,x0+(Nx-3-discard_x)*dx,3000)
+Y = np.linspace(y0+(1+discard_y)*dy,y0+(Ny-3-discard_y)*dy,3000)
+Z = np.linspace(z0+(1+discard_z)*dz,z0+(Nz-3-discard_z)*dz,3000)
 
 fig=plt.figure(1,[18,12])
 fig.suptitle('red: tricubic interpolation, blue: trilinear interpolation, black: true')

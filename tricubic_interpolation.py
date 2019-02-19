@@ -16,6 +16,10 @@ class Tricubic_Interpolation:
         self.dz = 1.
 
     def initialize(self, A):
+        self.x0 += (self.discard0-1)*self.dx
+        self.y0 += (self.discard1-1)*self.dy
+        self.z0 += (self.discard2-1)*self.dz
+
         if A.shape[0]- 2*self.discard0 < 2:
             raise Exception('n0 < 2: Interpolating array is too small along the first dimension (after discards).')
         if A.shape[1]- 2*self.discard1 < 2:
@@ -140,13 +144,13 @@ class Tricubic_Interpolation:
         iz = int(fz)
         
         if ix < 1 or ix > self.coefs.shape[0]:
-            raise Exception('Position is outside bounding box (first dimension)')
+            raise Exception('Position is outside bounding box (first dimension): %d'%ix)
 
         if iy < 1 or iy > self.coefs.shape[1]:
-            raise Exception('Position is outside bounding box (second dimension)')
+            raise Exception('Position is outside bounding box (second dimension): %d'%iy)
 
         if iz < 1 or iz > self.coefs.shape[2]:
-            raise Exception('Position is outside bounding box (third dimension)')
+            raise Exception('Position is outside bounding box (third dimension): %d'%iz)
 
         coefs = self.coefs[ix-1,iy-1,iz-1,:]
 
@@ -189,13 +193,14 @@ class Tricubic_Interpolation:
         iz = int(fz)
         
         if ix < 1 or ix > self.coefs.shape[0]:
-            raise Exception('Position is outside bounding box (first dimension)')
+            raise Exception('Position is outside bounding box (first dimension): %d'%ix)
 
         if iy < 1 or iy > self.coefs.shape[1]:
-            raise Exception('Position is outside bounding box (second dimension)')
+            raise Exception('Position is outside bounding box (second dimension): %d'%iy)
 
         if iz < 1 or iz > self.coefs.shape[2]:
-            raise Exception('Position is outside bounding box (third dimension)')
+            raise Exception('Position is outside bounding box (third dimension): %d'%iz)
+
 
         coefs = self.coefs[ix-1,iy-1,iz-1,:]
 
@@ -238,13 +243,13 @@ class Tricubic_Interpolation:
         iz = int(fz)
         
         if ix < 1 or ix > self.coefs.shape[0]:
-            raise Exception('Position is outside bounding box (first dimension)')
+            raise Exception('Position is outside bounding box (first dimension): %d'%ix)
 
         if iy < 1 or iy > self.coefs.shape[1]:
-            raise Exception('Position is outside bounding box (second dimension)')
+            raise Exception('Position is outside bounding box (second dimension): %d'%iy)
 
         if iz < 1 or iz > self.coefs.shape[2]:
-            raise Exception('Position is outside bounding box (third dimension)')
+            raise Exception('Position is outside bounding box (third dimension): %d'%iz)
 
         coefs = self.coefs[ix-1,iy-1,iz-1,:]
 
@@ -287,13 +292,13 @@ class Tricubic_Interpolation:
         iz = int(fz)
         
         if ix < 1 or ix > self.coefs.shape[0]:
-            raise Exception('Position is outside bounding box (first dimension)')
+            raise Exception('Position is outside bounding box (first dimension): %d'%ix)
 
         if iy < 1 or iy > self.coefs.shape[1]:
-            raise Exception('Position is outside bounding box (second dimension)')
+            raise Exception('Position is outside bounding box (second dimension): %d'%iy)
 
         if iz < 1 or iz > self.coefs.shape[2]:
-            raise Exception('Position is outside bounding box (third dimension)')
+            raise Exception('Position is outside bounding box (third dimension): %d'%iz)
 
         coefs = self.coefs[ix-1,iy-1,iz-1,:]
 
