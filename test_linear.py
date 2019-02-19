@@ -1,5 +1,5 @@
 from tricubic_interpolation import Tricubic_Interpolation
-from linear_interpolation import Trilinear_Interpolation
+from trilinear_interpolation import Trilinear_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
@@ -22,8 +22,8 @@ dx = 0.5
 dy = 0.1
 dz = 0.5
 discard_x = 1
-discard_y = 1
-discard_z = 1
+discard_y = 10
+discard_z = 2
 Nx = 100
 Ny = 100
 Nz = 100
@@ -37,7 +37,8 @@ for i in range(Nx):
             zi=dz*k + z0
             A[i,j,k] = lamf(xi, yi, zi) 
 
-x_obs = 3.
+#default values of x,y,z when they are not variable
+x_obs = 2.
 y_obs = 2.
 z_obs = 2.
 
@@ -52,9 +53,9 @@ iy = int(y0)
 iz = int(z0)
 
 
-X = np.linspace(x0+dx,x0+(Nx-30)*dx,3000)
-Y = np.linspace(y0+dy,y0+(Ny-30)*dy,3000)
-Z = np.linspace(z0+dz,z0+(Nz-30)*dz,3000)
+X = np.linspace(x0+(1+discard_x)*dx,x0+(Nx-2-discard_x)*dx,3000)
+Y = np.linspace(y0+(1+discard_y)*dy,y0+(Ny-2-discard_y)*dy,3000)
+Z = np.linspace(z0+(1+discard_z)*dz,z0+(Nz-2-discard_z)*dz,3000)
 
 fig=plt.figure(1,[18,12])
 fig.suptitle('red: trilinear interpolation, black: true')

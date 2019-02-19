@@ -17,6 +17,10 @@ class Tricubic_Interpolation:
         self.dz = 1.
 
     def initialize(self, A):
+        self.x0 += (self.discard0-1)*self.dx
+        self.y0 += (self.discard1-1)*self.dy
+        self.z0 += (self.discard2-1)*self.dz
+
         if A.shape[0]- 2*self.discard0 < 2:
             raise Exception('n0 < 2: Interpolating array is too small along the first dimension (after discards).')
         if A.shape[1]- 2*self.discard1 < 2:
@@ -141,13 +145,13 @@ class Tricubic_Interpolation:
         iz = int(fz)
         
         if ix < 1 or ix > self.coefs.shape[0]:
-            raise Exception('Position is outside bounding box (first dimension)')
+            raise Exception('Position is outside bounding box (first dimension): %d'%ix)
 
         if iy < 1 or iy > self.coefs.shape[1]:
-            raise Exception('Position is outside bounding box (second dimension)')
+            raise Exception('Position is outside bounding box (second dimension): %d'%iy)
 
         if iz < 1 or iz > self.coefs.shape[2]:
-            raise Exception('Position is outside bounding box (third dimension)')
+            raise Exception('Position is outside bounding box (third dimension): %d'%iz)
 
         coefs = self.coefs[ix-1,iy-1,iz-1,:]
 
@@ -190,13 +194,14 @@ class Tricubic_Interpolation:
         iz = int(fz)
         
         if ix < 1 or ix > self.coefs.shape[0]:
-            raise Exception('Position is outside bounding box (first dimension)')
+            raise Exception('Position is outside bounding box (first dimension): %d'%ix)
 
         if iy < 1 or iy > self.coefs.shape[1]:
-            raise Exception('Position is outside bounding box (second dimension)')
+            raise Exception('Position is outside bounding box (second dimension): %d'%iy)
 
         if iz < 1 or iz > self.coefs.shape[2]:
-            raise Exception('Position is outside bounding box (third dimension)')
+            raise Exception('Position is outside bounding box (third dimension): %d'%iz)
+
 
         coefs = self.coefs[ix-1,iy-1,iz-1,:]
 
@@ -239,13 +244,13 @@ class Tricubic_Interpolation:
         iz = int(fz)
         
         if ix < 1 or ix > self.coefs.shape[0]:
-            raise Exception('Position is outside bounding box (first dimension)')
+            raise Exception('Position is outside bounding box (first dimension): %d'%ix)
 
         if iy < 1 or iy > self.coefs.shape[1]:
-            raise Exception('Position is outside bounding box (second dimension)')
+            raise Exception('Position is outside bounding box (second dimension): %d'%iy)
 
         if iz < 1 or iz > self.coefs.shape[2]:
-            raise Exception('Position is outside bounding box (third dimension)')
+            raise Exception('Position is outside bounding box (third dimension): %d'%iz)
 
         coefs = self.coefs[ix-1,iy-1,iz-1,:]
 
@@ -288,13 +293,13 @@ class Tricubic_Interpolation:
         iz = int(fz)
         
         if ix < 1 or ix > self.coefs.shape[0]:
-            raise Exception('Position is outside bounding box (first dimension)')
+            raise Exception('Position is outside bounding box (first dimension): %d'%ix)
 
         if iy < 1 or iy > self.coefs.shape[1]:
-            raise Exception('Position is outside bounding box (second dimension)')
+            raise Exception('Position is outside bounding box (second dimension): %d'%iy)
 
         if iz < 1 or iz > self.coefs.shape[2]:
-            raise Exception('Position is outside bounding box (third dimension)')
+            raise Exception('Position is outside bounding box (third dimension): %d'%iz)
 
         coefs = self.coefs[ix-1,iy-1,iz-1,:]
 
@@ -392,67 +397,4 @@ class Tricubic_Interpolation:
                 dy *= y1
             dz *= z1
         return result
-
-#cc=0.050
-#
-#Nx=100
-#A = np.empty([Nx,10,10])
-#xa = np.empty([Nx])
-#for i in range(Nx):
-#    for j in range(10):
-#        for k in range(10):
-#            x=cc*i
-#            y=j
-#            z=k
-#            #A[i,j,k] = 5*x**3*y**3+x**3*z**3 
-#            A[i,j,k] = np.cos(np.power(0.1*x*y*z,1)+0.1)+10*np.exp(-x*y*z/300.)
-#    xa[i]=x
-#B= np.empty_like(xa)
-#B[0]=0
-#B[9]=0
-#x0 = 3.
-#y0 = 4.
-#z0 = 4.
-#
-#ip = Tricubic_Interpolation()
-#ip.discard0 = 1
-#ip.dx = cc
-#ip.initialize(A)
-#coefs = ip.coefs
-##v = finite_differences(A,1,1,1)
-##coefs = tricubic_coefs(v)
-#
-#ix = int(x0)
-#iy = int(y0)
-#iz = int(z0)
-#
-#print(A[ix,iy,iz])
-#for i in range(1,Nx-1):
-#    B[i]=(A[i+1,iy,iz]-A[i-1,iy,iz])/cc/2.
-#print(ip.val(x0,y0,z0))
-#
-#tx = np.linspace(0.2,3,3000)
-#ty = np.cos(np.power(0.1*tx*iy*iz,1)+0.1)+10*np.exp(-tx*iy*iz/300.)
-#tyi = np.empty_like(tx)
-#tyid = np.empty_like(tx)
-#for i,xx in enumerate(tx):
-#    tyi[i]= ip.val(xx,y0,z0)
-#    tyid[i]= ip.ddx(xx,y0+0.5,z0)
-#fig1 = plt.figure(1)
-#ax1 = fig1.add_subplot(111)
-#ax1.plot(xa,A[:,iy,iz],'ko')
-#ax1.plot(tx,ty,'r-')
-#ax1.plot(tx,tyi,'g-')
-#fig2 = plt.figure(2)
-#ax2 = fig2.add_subplot(111)
-#ax2.plot(xa,B[:],'ko')
-#ax2.plot(tx,tyid,'g-')
-#plt.show(False)
-#input()
-#
-
-
-
-
-
 

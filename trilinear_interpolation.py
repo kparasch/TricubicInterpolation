@@ -17,6 +17,9 @@ class Trilinear_Interpolation:
         self.dz = 1.
 
     def initialize(self, A):
+        self.x0 += (self.discard0-1)*self.dx
+        self.y0 += (self.discard1-1)*self.dy
+        self.z0 += (self.discard2-1)*self.dz
         if A.shape[0]- 2*self.discard0 < 2:
             raise Exception('n0 < 2: Interpolating array is too small along the first dimension (after discards).')
         if A.shape[1]- 2*self.discard1 < 2:
@@ -79,7 +82,7 @@ class Trilinear_Interpolation:
         iz = int(fz)
         
         if ix < 1 or ix > self.v.shape[0]-1:
-            raise Exception('Position is outside bounding box (first dimension)', x)
+            raise Exception('Position is outside bounding box (first dimension)', ix)
 
         if iy < 1 or iy > self.v.shape[1]-1:
             raise Exception('Position is outside bounding box (second dimension)', iy)
