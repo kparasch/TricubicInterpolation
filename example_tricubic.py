@@ -6,6 +6,8 @@ import sympy
 
 x,y,z = sympy.symbols('x y z')
 f = 0.0001*sympy.exp(-z)*(0.03*x**4-1.5*x**3)*y**3
+#f = z**2*(0.03*x**1-1.5*x**3)*y**3
+#f = z**2*(x**3)*y**3
 dfdx=sympy.diff(f,x)
 dfdy=sympy.diff(f,y)
 dfdz=sympy.diff(f,z)
@@ -17,8 +19,9 @@ lamdfdz = sympy.lambdify((x,y,z), dfdz, modules='numpy')
 x0 = 0.
 y0 = 0.
 z0 = 0.
-dx = 0.513
-dy = 0.1
+dx = 0.5
+#dy = 0.1
+dy = 0.5
 dz = 0.36
 discard_x = 1
 discard_y = 1
@@ -38,7 +41,7 @@ for i in range(Nx):
 
 #default values of x,y,z when they are not variable
 x_obs = 3.
-y_obs = 2.
+y_obs = 3.
 z_obs = 2.
 
 ip = Tricubic_Interpolation()
@@ -116,6 +119,8 @@ ax10.plot(Z, np.array([ip.ddx(x_obs,y_obs, i) for i in Z]),'r')
 ax10.set_xlabel('z')
 
 ax11=fig.add_subplot(3,4,11)
+
+#ax11.plot(np.array([dz*k +dz for k in range(Nz-2)]),(A[:,:,1:-1]-A[:,:,-1:-3])/(2.*dz),'go')
 ax11.plot(Z, lamdfdy(x_obs,y_obs, Z),'k')
 ax11.plot(Z, np.array([ip.ddy(x_obs,z_obs, i) for i in Z]),'r')
 ax11.set_xlabel('z')

@@ -93,7 +93,7 @@ class Tricubic_Interpolation:
         ###############################################################
     
         #df/dx1dx2#####################################################
-        v[:,:,:,6] = 0.125*(+A[d0+1:n0+d0+1,d1+1:n1+d1+1,d2+1:n2+d2+1] 
+        v[:,:,:,7] = 0.125*(+A[d0+1:n0+d0+1,d1+1:n1+d1+1,d2+1:n2+d2+1] 
                             -A[d0-1:n0+d0-1,d1+1:n1+d1+1,d2+1:n2+d2+1] 
                             -A[d0+1:n0+d0+1,d1-1:n1+d1-1,d2+1:n2+d2+1] 
                             +A[d0-1:n0+d0-1,d1-1:n1+d1-1,d2+1:n2+d2+1]
@@ -158,10 +158,6 @@ class Tricubic_Interpolation:
         y1 = fy - iy
         z1 = fz - iz
 
-        dz=1
-        result = 0
-        i = 0
-    
         xv=np.empty([4],dtype=np.float64)
         yv=np.empty([4],dtype=np.float64)
         zv=np.empty([4],dtype=np.float64)
@@ -208,10 +204,6 @@ class Tricubic_Interpolation:
         y1 = fy - iy
         z1 = fz - iz
 
-        dz=1
-        result = 0
-        i = 0
-    
         xv=np.empty([4],dtype=np.float64)
         yv=np.empty([4],dtype=np.float64)
         zv=np.empty([4],dtype=np.float64)
@@ -221,12 +213,12 @@ class Tricubic_Interpolation:
         xv[1]=x1
         yv[1]=1
         zv[1]=z1
-        xv[2]=x1*xv[1]
-        yv[2]=2*y1*yv[1]
-        zv[2]=z1*zv[1]
-        xv[3]=x1*xv[2]
-        yv[3]=1.5*y1*yv[2]
-        zv[3]=z1*zv[2]
+        xv[2]=  x1**2   #x1*xv[1]
+        yv[2]=2*y1      #2*y1*yv[1]
+        zv[2]=  z1**2   #z1*zv[1]
+        xv[3]=  x1**3   #x1*xv[2]
+        yv[3]=3*y1**2   #1.5*y1*yv[2]
+        zv[3]=  z1**3   #z1*zv[2]
         res = np.matmul(coefs.reshape(4,4,4),xv)
         res = np.matmul(res,yv)
         res = np.matmul(res,zv)
@@ -306,10 +298,6 @@ class Tricubic_Interpolation:
         y1 = fy - iy
         z1 = fz - iz
 
-        dz=1
-        result = 0
-        i = 0
-    
         xv=np.empty([4],dtype=np.float64)
         yv=np.empty([4],dtype=np.float64)
         zv=np.empty([4],dtype=np.float64)
@@ -396,4 +384,5 @@ class Tricubic_Interpolation:
                 dy *= y1
             dz *= z1
         return result
+
 
