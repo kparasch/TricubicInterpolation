@@ -1,34 +1,52 @@
 import numpy as np
 from tricubic_matrix import tricubicMat
 
+
 class Tricubic_Interpolation:
-    def __init__(self):
-        self.discard0 = 1
-        self.discard1 = 1
-        self.discard2 = 1
+    def __init__(self, A, x0=0., y0=0., z0=0., dx=1., dy=1., dz=1., discard0=1, discard1=1, discard2=1, method='Finite Differences'):
+        self.discard0 = discard0
+        self.discard1 = discard1
+        self.discard2 = discard2
         
-        self.x0 = 0. 
-        self.y0 = 0. 
-        self.z0 = 0.
+        self.x0 = x0 
+        self.y0 = y0 
+        self.z0 = z0
 
-        self.dx = 1.
-        self.dy = 1.
-        self.dz = 1.
+        self.dx = dx
+        self.dy = dy
+        self.dz = dz
 
-    def initialize(self, A):
+        if method=='Exact':
+            if len(A.shape) != 4:
+                raise('Input array should be 4-dimensional when using exact derivatives method. It\'s not.')
+            self.construct_b = self.exact_diff
+        else:
+            if len(A.shape) != 3:
+                raise('Input array should be 3-dimensional when using finite differences method. It\'s not.')
+            self.construct_b = self.finite_diff
+
+    #    self.initialize(A)
+
+    #def initialize(self, A):
         self.x0 += (self.discard0-1)*self.dx
         self.y0 += (self.discard1-1)*self.dy
         self.z0 += (self.discard2-1)*self.dz
 
-        self.A = A[self.discard0-1:-(self.discard0-1),self.discard1-1:-(self.discard1-1),self.discard2-1:-(self.discard2-1)]
+        self.A = A[:,:,:]
+        if self.discard0 > 1:
+            self.A = self.A[self.discard0-1:-(self.discard0-1),:,:]
+        if self.discard1 > 1:
+            self.A = self.A[:,self.discard1-1:-(self.discard1-1),:]
+        if self.discard2 > 1:
+            self.A = self.A[:,:,self.discard2-1:-(self.discard2-1)]
         
-        self.ix_bound_up  = A.shape[0] - 2 - self.discard0
-        self.iy_bound_up  = A.shape[1] - 2 - self.discard1
-        self.iz_bound_up  = A.shape[2] - 2 - self.discard2
+        self.ix_bound_up  = self.A.shape[0] - 3 
+        self.iy_bound_up  = self.A.shape[1] - 3 
+        self.iz_bound_up  = self.A.shape[2] - 3 
 
-        self.ix_bound_low = self.discard0
-        self.iy_bound_low = self.discard1
-        self.iz_bound_low = self.discard2
+        self.ix_bound_low = 1
+        self.iy_bound_low = 1
+        self.iz_bound_low = 1
 
         #if A.shape[0]- 2*self.discard0 < 2:
         #    raise Exception('n0 < 2: Interpolating array is too small along the first dimension (after discards).')
@@ -36,6 +54,7 @@ class Tricubic_Interpolation:
         #    raise Exception('n1 < 2: Interpolating array is too small along the second dimension (after discards).')
         #if A.shape[2]- 2*self.discard2 < 2:
         #    raise Exception('n2 < 2: Interpolating array is too small along the third dimension (after discards).')
+
 
     def set_origin(self, x0, y0, z0):
         self.x0 = x0
@@ -55,6 +74,22 @@ class Tricubic_Interpolation:
         self.discard2 = discard2
 
 
+    def exact_diff(self, ix, iy, iz): 
+        
+        b = np.empty([64],dtype=np.float64)
+        
+        for l in range(8):
+            b[8*l+0] = self.A[ix  ,iy  ,iz  ,l]
+            b[8*l+1] = self.A[ix+1,iy  ,iz  ,l]
+            b[8*l+2] = self.A[ix  ,iy+1,iz  ,l]
+            b[8*l+3] = self.A[ix+1,iy+1,iz  ,l]
+            b[8*l+4] = self.A[ix  ,iy  ,iz+1,l]
+            b[8*l+5] = self.A[ix+1,iy  ,iz+1,l]
+            b[8*l+6] = self.A[ix  ,iy+1,iz+1,l]
+            b[8*l+7] = self.A[ix+1,iy+1,iz+1,l]
+
+        return b
+        
     def finite_diff(self, ix, iy, iz):
         b = np.empty([64],dtype=np.float64)
         
@@ -169,7 +204,8 @@ class Tricubic_Interpolation:
             inside_box = 0
 
         if not inside_box:
-            raise Warning('Coordinates outside bounding box')
+            print('***WARNING: Coordinates outside bounding box.***')
+            #raise RuntimeWarning('Coordinates outside bounding box.\n\t    (x0,y0,z0) = (%f,%f,%f) \n\t input (x,y,z) = (%f,%f,%f) '%(self.x0,self.y0,self.z0,x,y,z))
 
         return ix, iy, iz, x1, y1, z1, inside_box
 
@@ -181,7 +217,7 @@ class Tricubic_Interpolation:
         if not inside_box:
             return 0
 
-        b = self.finite_diff(ix,iy,iz)
+        b = self.construct_b(ix,iy,iz)
         coefs = np.matmul(tricubicMat, b)
 
         res=0
@@ -199,7 +235,7 @@ class Tricubic_Interpolation:
         if not inside_box:
             return 0
 
-        b = self.finite_diff(ix,iy,iz)
+        b = self.construct_b(ix,iy,iz)
         coefs = np.matmul(tricubicMat, b)
         
         res=0
@@ -217,7 +253,7 @@ class Tricubic_Interpolation:
         if not inside_box:
             return 0
 
-        b = self.finite_diff(ix,iy,iz)
+        b = self.construct_b(ix,iy,iz)
         coefs = np.matmul(tricubicMat, b)
 
         res=0
@@ -235,7 +271,7 @@ class Tricubic_Interpolation:
         if not inside_box:
             return 0
 
-        b = self.finite_diff(ix,iy,iz)
+        b = self.construct_b(ix,iy,iz)
         coefs = np.matmul(tricubicMat, b)
 
         res=0
