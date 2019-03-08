@@ -16,10 +16,19 @@ class Tricubic_Interpolation:
         self.dz = 1.
 
     def initialize(self, A):
-        #self.x0 += (self.discard0-1)*self.dx
-        #self.y0 += (self.discard1-1)*self.dy
-        #self.z0 += (self.discard2-1)*self.dz
-        self.A = A
+        self.x0 += (self.discard0-1)*self.dx
+        self.y0 += (self.discard1-1)*self.dy
+        self.z0 += (self.discard2-1)*self.dz
+
+        self.A = A[self.discard0-1:-(self.discard0-1),self.discard1-1:-(self.discard1-1),self.discard2-1:-(self.discard2-1)]
+        
+        self.ix_bound_up  = A.shape[0] - 2 - self.discard0
+        self.iy_bound_up  = A.shape[1] - 2 - self.discard1
+        self.iz_bound_up  = A.shape[2] - 2 - self.discard2
+
+        self.ix_bound_low = self.discard0
+        self.iy_bound_low = self.discard1
+        self.iz_bound_low = self.discard2
 
         #if A.shape[0]- 2*self.discard0 < 2:
         #    raise Exception('n0 < 2: Interpolating array is too small along the first dimension (after discards).')
@@ -28,18 +37,17 @@ class Tricubic_Interpolation:
         #if A.shape[2]- 2*self.discard2 < 2:
         #    raise Exception('n2 < 2: Interpolating array is too small along the third dimension (after discards).')
 
-        #v = self.finite_differences(A, self.discard0, self.discard1, self.discard2)
-        #self.coefs = self.tricubic_coefs(v)
-
     def set_origin(self, x0, y0, z0):
         self.x0 = x0
         self.y0 = y0
         self.z0 = z0
 
+
     def set_steps(self, dx, dy, dz):
         self.dx = dx
         self.dy = dy
         self.dz = dz
+
 
     def discard_points(self, discard0, discard1, discard2):
         self.discard0 = discard0
@@ -124,8 +132,9 @@ class Tricubic_Interpolation:
 
         return b
 
-    def val(self, x, y, z):
 
+    def coords_to_indices(self, x, y, z):
+        
         fx = (x - self.x0)/self.dx
         fy = (y - self.y0)/self.dy
         fz = (z - self.z0)/self.dz
@@ -133,26 +142,48 @@ class Tricubic_Interpolation:
         ix = int(fx)
         iy = int(fy)
         iz = int(fz)
+
+        return ix, iy, iz
+
+
+    def coords_to_indices_and_floats(self, x, y, z):
         
-        if ix < 1 or ix > self.A.shape[0]:
-            return 0
- #           raise Exception('Position is outside bounding box (first dimension): %d'%ix)
+        fx = (x - self.x0)/self.dx
+        fy = (y - self.y0)/self.dy
+        fz = (z - self.z0)/self.dz
 
-        if iy < 1 or iy > self.A.shape[1]:
-            return 0
- #           raise Exception('Position is outside bounding box (second dimension): %d'%iy)
-
-        if iz < 1 or iz > self.A.shape[2]:
-            return 0
- #           raise Exception('Position is outside bounding box (third dimension): %d'%iz)
-
-        b = self.finite_diff(ix,iy,iz)
-        coefs = np.matmul(tricubicMat, b)
+        ix = int(fx)
+        iy = int(fy)
+        iz = int(fz)
 
         x1 = fx - ix
         y1 = fy - iy
         z1 = fz - iz
+
+        inside_box = 1
+        if ix < self.ix_bound_low or ix > self.ix_bound_up:
+            inside_box = 0
+        elif iy < self.iy_bound_low or iy > self.iy_bound_up:
+            inside_box = 0
+        elif iz < self.iz_bound_low or iz > self.iz_bound_up:
+            inside_box = 0
+
+        if not inside_box:
+            raise Warning('Coordinates outside bounding box')
+
+        return ix, iy, iz, x1, y1, z1, inside_box
+
+
+    def val(self, x, y, z):
         
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
+
+        if not inside_box:
+            return 0
+
+        b = self.finite_diff(ix,iy,iz)
+        coefs = np.matmul(tricubicMat, b)
+
         res=0
         for i in range(4):
             for j in range(4):
@@ -163,32 +194,13 @@ class Tricubic_Interpolation:
 
     def ddx(self, x, y, z):
 
-        fx = (x - self.x0)/self.dx
-        fy = (y - self.y0)/self.dy
-        fz = (z - self.z0)/self.dz
-
-        ix = int(fx)
-        iy = int(fy)
-        iz = int(fz)
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
         
-        if ix < 1 or ix > self.A.shape[0]:
+        if not inside_box:
             return 0
- #           raise Exception('Position is outside bounding box (first dimension): %d'%ix)
-
-        if iy < 1 or iy > self.A.shape[1]:
-            return 0
- #           raise Exception('Position is outside bounding box (second dimension): %d'%iy)
-
-        if iz < 1 or iz > self.A.shape[2]:
-            return 0
- #           raise Exception('Position is outside bounding box (third dimension): %d'%iz)
 
         b = self.finite_diff(ix,iy,iz)
         coefs = np.matmul(tricubicMat, b)
-
-        x1 = fx - ix
-        y1 = fy - iy
-        z1 = fz - iz
         
         res=0
         for i in range(1,4):
@@ -200,33 +212,14 @@ class Tricubic_Interpolation:
 
     def ddy(self, x, y, z):
 
-        fx = (x - self.x0)/self.dx
-        fy = (y - self.y0)/self.dy
-        fz = (z - self.z0)/self.dz
-
-        ix = int(fx)
-        iy = int(fy)
-        iz = int(fz)
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
         
-        if ix < 1 or ix > self.A.shape[0]:
+        if not inside_box:
             return 0
- #           raise Exception('Position is outside bounding box (first dimension): %d'%ix)
-
-        if iy < 1 or iy > self.A.shape[1]:
-            return 0
- #           raise Exception('Position is outside bounding box (second dimension): %d'%iy)
-
-        if iz < 1 or iz > self.A.shape[2]:
-            return 0
- #           raise Exception('Position is outside bounding box (third dimension): %d'%iz)
 
         b = self.finite_diff(ix,iy,iz)
         coefs = np.matmul(tricubicMat, b)
 
-        x1 = fx - ix
-        y1 = fy - iy
-        z1 = fz - iz
-        
         res=0
         for i in range(4):
             for j in range(1,4):
@@ -237,33 +230,14 @@ class Tricubic_Interpolation:
 
     def ddz(self, x, y, z):
 
-        fx = (x - self.x0)/self.dx
-        fy = (y - self.y0)/self.dy
-        fz = (z - self.z0)/self.dz
-
-        ix = int(fx)
-        iy = int(fy)
-        iz = int(fz)
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
         
-        if ix < 1 or ix > self.A.shape[0]:
+        if not inside_box:
             return 0
- #           raise Exception('Position is outside bounding box (first dimension): %d'%ix)
-
-        if iy < 1 or iy > self.A.shape[1]:
-            return 0
- #           raise Exception('Position is outside bounding box (second dimension): %d'%iy)
-
-        if iz < 1 or iz > self.A.shape[2]:
-            return 0
- #           raise Exception('Position is outside bounding box (third dimension): %d'%iz)
 
         b = self.finite_diff(ix,iy,iz)
         coefs = np.matmul(tricubicMat, b)
 
-        x1 = fx - ix
-        y1 = fy - iy
-        z1 = fz - iz
-        
         res=0
         for i in range(4):
             for j in range(4):
