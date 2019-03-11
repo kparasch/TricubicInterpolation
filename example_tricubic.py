@@ -45,7 +45,7 @@ x_obs = 3.
 y_obs = 6.
 z_obs = 2.
 
-ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y,discard_z)
+ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
 #ip = Tricubic_Interpolation()
 #ip.discard_points(discard_x, discard_y, discard_z)
 #ip.set_steps(dx, dy, dz)

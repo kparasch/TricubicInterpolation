@@ -17,12 +17,14 @@ class Tricubic_Interpolation:
         self.z0 = z0 + (discardz-1)*dx
 
         if method=='Exact':
+            print('Using exact derivatives.')
             if len(A.shape) != 4:
-                raise('Input array should be 4-dimensional when using exact derivatives method. It\'s not.')
+                raise Exception('Input array should be 4-dimensional when using exact derivatives method. It\'s not.')
             self.construct_b = self.exact_diff
         else:
+            print('Using finite difference approximation for derivatives.')
             if len(A.shape) != 3:
-                raise('Input array should be 3-dimensional when using finite differences method. It\'s not.')
+                raise Exception('Input array should be 3-dimensional when using finite differences method. It\'s not.')
             self.construct_b = self.finite_diff
 
 
@@ -34,9 +36,9 @@ class Tricubic_Interpolation:
         if self.discardz > 1:
             self.A = self.A[:,:,self.discardz-1:-(self.discardz-1)]
         
-        self.ix_bound_up  = self.A.shape[0] - 3 
-        self.iy_bound_up  = self.A.shape[1] - 3 
-        self.iz_bound_up  = self.A.shape[2] - 3 
+        self.ix_bound_up = self.A.shape[0] - 3 
+        self.iy_bound_up = self.A.shape[1] - 3 
+        self.iz_bound_up = self.A.shape[2] - 3 
 
         self.ix_bound_low = 1
         self.iy_bound_low = 1
@@ -57,40 +59,29 @@ class Tricubic_Interpolation:
         #    raise Exception('n2 < 2: Interpolating array is too small along the third dimension (after discards).')
 
 
-    def set_origin(self, x0, y0, z0):
-        self.x0 = x0
-        self.y0 = y0
-        self.z0 = z0
-
-
-    def set_steps(self, dx, dy, dz):
-        self.dx = dx
-        self.dy = dy
-        self.dz = dz
-
-
-    def discard_points(self, discardx, discardy, discardz):
-        self.discardx = discardx
-        self.discardy = discardy
-        self.discardz = discardz
-
-
     def exact_diff(self, ix, iy, iz): 
         
+        #scaling factors for derivatives
+        scale = [1 ,self.dx, self.dy, self.dz, self.dx*self.dy,
+                 self.dx*self.dz, self.dy*self.dz,
+                 self.dx*self.dy*self.dz
+                ]
+
         b = np.empty([64],dtype=np.float64)
         
         for l in range(8):
-            b[8*l+0] = self.A[ix  ,iy  ,iz  ,l]
-            b[8*l+1] = self.A[ix+1,iy  ,iz  ,l]
-            b[8*l+2] = self.A[ix  ,iy+1,iz  ,l]
-            b[8*l+3] = self.A[ix+1,iy+1,iz  ,l]
-            b[8*l+4] = self.A[ix  ,iy  ,iz+1,l]
-            b[8*l+5] = self.A[ix+1,iy  ,iz+1,l]
-            b[8*l+6] = self.A[ix  ,iy+1,iz+1,l]
-            b[8*l+7] = self.A[ix+1,iy+1,iz+1,l]
+            b[8*l+0] = self.A[ix  ,iy  ,iz  ,l]*scale[l]
+            b[8*l+1] = self.A[ix+1,iy  ,iz  ,l]*scale[l]
+            b[8*l+2] = self.A[ix  ,iy+1,iz  ,l]*scale[l]
+            b[8*l+3] = self.A[ix+1,iy+1,iz  ,l]*scale[l]
+            b[8*l+4] = self.A[ix  ,iy  ,iz+1,l]*scale[l]
+            b[8*l+5] = self.A[ix+1,iy  ,iz+1,l]*scale[l]
+            b[8*l+6] = self.A[ix  ,iy+1,iz+1,l]*scale[l]
+            b[8*l+7] = self.A[ix+1,iy+1,iz+1,l]*scale[l]
 
         return b
-        
+
+
     def finite_diff(self, ix, iy, iz):
         b = np.empty([64],dtype=np.float64)
         
