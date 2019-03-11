@@ -3,18 +3,18 @@ from tricubic_matrix import tricubicMat
 
 
 class Tricubic_Interpolation:
-    def __init__(self, A, x0=0., y0=0., z0=0., dx=1., dy=1., dz=1., discard0=1, discard1=1, discard2=1, method='Finite Differences'):
-        self.discard0 = discard0
-        self.discard1 = discard1
-        self.discard2 = discard2
-        
-        self.x0 = x0 
-        self.y0 = y0 
-        self.z0 = z0
+    def __init__(self, A, x0=0., y0=0., z0=0., dx=1., dy=1., dz=1., discardx=1, discardy=1, discardz=1, method='Finite Differences'):
+        self.discardx = discardx
+        self.discardy = discardy
+        self.discardz = discardz
 
         self.dx = dx
         self.dy = dy
         self.dz = dz
+
+        self.x0 = x0 + (discardx-1)*dx
+        self.y0 = y0 + (discardy-1)*dx
+        self.z0 = z0 + (discardz-1)*dx
 
         if method=='Exact':
             if len(A.shape) != 4:
@@ -25,20 +25,14 @@ class Tricubic_Interpolation:
                 raise('Input array should be 3-dimensional when using finite differences method. It\'s not.')
             self.construct_b = self.finite_diff
 
-    #    self.initialize(A)
-
-    #def initialize(self, A):
-        self.x0 += (self.discard0-1)*self.dx
-        self.y0 += (self.discard1-1)*self.dy
-        self.z0 += (self.discard2-1)*self.dz
 
         self.A = A[:,:,:]
-        if self.discard0 > 1:
-            self.A = self.A[self.discard0-1:-(self.discard0-1),:,:]
-        if self.discard1 > 1:
-            self.A = self.A[:,self.discard1-1:-(self.discard1-1),:]
-        if self.discard2 > 1:
-            self.A = self.A[:,:,self.discard2-1:-(self.discard2-1)]
+        if self.discardx > 1:
+            self.A = self.A[self.discardx-1:-(self.discardx-1),:,:]
+        if self.discardy > 1:
+            self.A = self.A[:,self.discardy-1:-(self.discardy-1),:]
+        if self.discardz > 1:
+            self.A = self.A[:,:,self.discardz-1:-(self.discardz-1)]
         
         self.ix_bound_up  = self.A.shape[0] - 3 
         self.iy_bound_up  = self.A.shape[1] - 3 
@@ -48,11 +42,18 @@ class Tricubic_Interpolation:
         self.iy_bound_low = 1
         self.iz_bound_low = 1
 
-        #if A.shape[0]- 2*self.discard0 < 2:
+        if self.ix_bound_up <= self.ix_bound_low:
+            raise Exception('Interpolating array is too small along the first dimension (after discards).')
+        if self.iy_bound_up <= self.iy_bound_low:
+            raise Exception('Interpolating array is too small along the second dimension (after discards).')
+        if self.iz_bound_up <= self.iz_bound_low:
+            raise Exception('Interpolating array is too small along the third dimension (after discards).')
+
+        #if A.shape[0]- 2*self.discardx < 2:
         #    raise Exception('n0 < 2: Interpolating array is too small along the first dimension (after discards).')
-        #if A.shape[1]- 2*self.discard1 < 2:
+        #if A.shape[1]- 2*self.discardy < 2:
         #    raise Exception('n1 < 2: Interpolating array is too small along the second dimension (after discards).')
-        #if A.shape[2]- 2*self.discard2 < 2:
+        #if A.shape[2]- 2*self.discardz < 2:
         #    raise Exception('n2 < 2: Interpolating array is too small along the third dimension (after discards).')
 
 
@@ -68,10 +69,10 @@ class Tricubic_Interpolation:
         self.dz = dz
 
 
-    def discard_points(self, discard0, discard1, discard2):
-        self.discard0 = discard0
-        self.discard1 = discard1
-        self.discard2 = discard2
+    def discard_points(self, discardx, discardy, discardz):
+        self.discardx = discardx
+        self.discardy = discardy
+        self.discardz = discardz
 
 
     def exact_diff(self, ix, iy, iz): 
