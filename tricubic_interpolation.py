@@ -17,12 +17,12 @@ class Tricubic_Interpolation:
         self.z0 = z0 + (discardz-1)*dx
 
         if method=='Exact':
-            print('Using exact derivatives.')
+            #print('Using exact derivatives.')
             if len(A.shape) != 4:
                 raise Exception('Input array should be 4-dimensional when using exact derivatives method. It\'s not.')
             self.construct_b = self.exact_diff
         else:
-            print('Using finite difference approximation for derivatives.')
+            #print('Using finite difference approximation for derivatives.')
             if len(A.shape) != 3:
                 raise Exception('Input array should be 3-dimensional when using finite differences method. It\'s not.')
             self.construct_b = self.finite_diff
@@ -36,9 +36,10 @@ class Tricubic_Interpolation:
         if self.discardz > 1:
             self.A = self.A[:,:,self.discardz-1:-(self.discardz-1)]
         
-        self.ix_bound_up = self.A.shape[0] - 3 
-        self.iy_bound_up = self.A.shape[1] - 3 
-        self.iz_bound_up = self.A.shape[2] - 3 
+        self.ix_bound_up = self.A.shape[0] - 3  #    a -1 because counting starts from 0,
+        self.iy_bound_up = self.A.shape[1] - 3  #    another -1 because one more point is needed for finite differences,
+        self.iz_bound_up = self.A.shape[2] - 3  #    and a last -1 because the bound corresponds to the bound 
+                                                #    for the lower index inclusive
 
         self.ix_bound_low = 1
         self.iy_bound_low = 1
@@ -62,7 +63,7 @@ class Tricubic_Interpolation:
     def exact_diff(self, ix, iy, iz): 
         
         #scaling factors for derivatives
-        scale = [1 ,self.dx, self.dy, self.dz, self.dx*self.dy,
+        scale = [1, self.dx, self.dy, self.dz, self.dx*self.dy,
                  self.dx*self.dz, self.dy*self.dz,
                  self.dx*self.dy*self.dz
                 ]
@@ -187,20 +188,22 @@ class Tricubic_Interpolation:
         y1 = fy - iy
         z1 = fz - iz
 
-        inside_box = 1
-        if ix < self.ix_bound_low or ix > self.ix_bound_up:
-            inside_box = 0
+        inside_box = True
+        if   ix < self.ix_bound_low or ix > self.ix_bound_up:
+            inside_box = False
         elif iy < self.iy_bound_low or iy > self.iy_bound_up:
-            inside_box = 0
+            inside_box = False
         elif iz < self.iz_bound_low or iz > self.iz_bound_up:
-            inside_box = 0
+            inside_box = False
 
         if not inside_box:
             print('***WARNING: Coordinates outside bounding box.***')
             #raise RuntimeWarning('Coordinates outside bounding box.\n\t    (x0,y0,z0) = (%f,%f,%f) \n\t input (x,y,z) = (%f,%f,%f) '%(self.x0,self.y0,self.z0,x,y,z))
 
         return ix, iy, iz, x1, y1, z1, inside_box
-
+    
+    def get_coefs(self,b):
+        return np.matmul(tricubicMat, b)
 
     def val(self, x, y, z):
         

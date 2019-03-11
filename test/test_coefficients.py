@@ -10,16 +10,10 @@ import sympy
 
 def run_test():
     x,y,z = sympy.symbols('x y z')
-    upper_int = 9999
+    upper_int = 9
     #print('One random number: %d'%np.random.randint(upper_int))
-    f =  np.random.randint(upper_int)*1    \
-       + np.random.randint(upper_int)*x    \
-       + np.random.randint(upper_int)*y    \
-       + np.random.randint(upper_int)*z    \
-       + np.random.randint(upper_int)*x*y  \
-       + np.random.randint(upper_int)*x*z  \
-       + np.random.randint(upper_int)*y*z  \
-       + np.random.randint(upper_int)*x*y*z 
+    coefs_true = np.random.randint(upper_int, size=64)
+    f = sum([ coefs_true[i + 4*j + 16*k] * x**i * y**j * z**k for i in range(4) for j in range(4) for k in range(4)])
     dfdx=sympy.diff(f,x)
     dfdy=sympy.diff(f,y)
     dfdz=sympy.diff(f,z)
@@ -36,18 +30,18 @@ def run_test():
     lamdfdydz = sympy.lambdify((x,y,z), dfdydz, modules='numpy')
     lamdfdxdydz = sympy.lambdify((x,y,z), dfdxdydz, modules='numpy')
 
-    x0 = 0.
-    y0 = 0.
-    z0 = 0.
-    dx = 2
-    dy = 3
-    dz = 7
-    discard_x = 1
-    discard_y = 5
-    discard_z = 1
-    Nx = 100
-    Ny = 100
-    Nz = 100
+    x0 = 0
+    y0 = 0
+    z0 = 0
+    dx = 1#2
+    dy = 1#3
+    dz = 1#7
+    discard_x = 1#1
+    discard_y = 1#5
+    discard_z = 1#1
+    Nx = 30
+    Ny = 30
+    Nz = 30
 
     A = np.empty([Nx,Ny,Nz])
     B = np.empty([Nx,Ny,Nz,8])
@@ -76,17 +70,39 @@ def run_test():
     ip2 = Tricubic_Interpolation(B, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, 'Exact')
     
     passed = True
-    for i in range(100):
-        x = np.random.rand()*(Nx-3-2*discard_x)*dx + x0 +discard_x*dx
-        y = np.random.rand()*(Ny-3-2*discard_y)*dy + y0 +discard_y*dy
-        z = np.random.rand()*(Nz-3-2*discard_z)*dz + z0 +discard_z*dz
-        ix1,iy1,iz1 = ip.coords_to_indices(x,y,z)
-        ix2,iy2,iz2 = ip2.coords_to_indices(x,y,z)
-        passed = passed and np.array_equal(ip.construct_b(ix1,iy1,iz1), ip2.construct_b(ix2,iy2,iz2))
-
+    n = 1
+    for test in range(n):
+        xv = np.random.rand()*(Nx-3-2*discard_x)*dx + x0 +discard_x*dx
+        yv = np.random.rand()*(Ny-3-2*discard_y)*dy + y0 +discard_y*dy
+        zv = np.random.rand()*(Nz-3-2*discard_z)*dz + z0 +discard_z*dz
+        ix1,iy1,iz1 = ip.coords_to_indices(xv,yv,zv)
+        ix2,iy2,iz2 = ip2.coords_to_indices(xv,yv,zv)
+        coefs1 = ip.get_coefs(ip.construct_b(ix1, iy1, iz1))
+        coefs2 = ip2.get_coefs(ip2.construct_b(ix2, iy2, iz2))
+        fxyz = sympy.simplify(sum([ int(coefs2[i + 4*j + 16*k]) * ((x-ix2)/dx)**i * ((y-iy2)/dy)**j * ((z-iz2)/dz)**k for i in range(4) for j in range(4) for k in range(4)]))
+#        passed = passed and np.array_equal(coefs_true, coefs2)
+        print(fxyz)
+        print(coefs_true)
+        #print(coefs2)
+        
+        #fxyz = f
+        coefs_test = np.zeros([64])
+        for Terms_fyz in sympy.Poly(fxyz,x).all_terms():
+            ii = Terms_fyz[0][0]
+            fyz = Terms_fyz[1]
+            for Terms_fz in sympy.Poly(fyz,y).all_terms():
+                jj = Terms_fz[0][0]
+                fz = Terms_fz[1]
+                for Terms_f in sympy.Poly(fz,z).all_terms():
+                    kk = Terms_f[0][0]
+                    coef = Terms_f[1]
+                    coefs_test[ii + 4 * jj + 16 * kk] = int(coef)
+                
+        passed = passed and np.array_equal(coefs_true, coefs_test)
+        print(coefs_test)
     return passed
 
-n_tests = 3
+n_tests = 300
 passed_flag = True
 for i in range(n_tests):
     test_result = run_test()
