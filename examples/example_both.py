@@ -42,11 +42,7 @@ x_obs = 7.
 y_obs = 2.
 z_obs = 2.
 
-ip = Tricubic_Interpolation()
-ip.discard_points(discard_x, discard_y, discard_z)
-ip.set_steps(dx, dy, dz)
-ip.set_origin(x0, y0, z0)
-ip.initialize(A)
+ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
 
 il = Trilinear_Interpolation()
 il.discard_points(discard_x, discard_y, discard_z)
