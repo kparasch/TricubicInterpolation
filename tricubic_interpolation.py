@@ -2,7 +2,7 @@ import numpy as np
 from tricubic_matrix import tricubicMat
 
 
-class Tricubic_Interpolation:
+class Tricubic_Interpolation(object):
     def __init__(self, A, x0=0., y0=0., z0=0., dx=1., dy=1., dz=1., discardx=1, discardy=1, discardz=1, method='Finite Differences'):
         self.discardx = discardx
         self.discardy = discardy

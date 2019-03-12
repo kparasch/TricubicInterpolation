@@ -1,12 +1,13 @@
 from tricubic_interpolation import Tricubic_Interpolation
-from trilinear_interpolation import Trilinear_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
 #plt.style.use('kostas')
 
 x,y,z = sympy.symbols('x y z')
-f = 0.0001*sympy.exp(-z)*(0.03*x**4-1.5*x**3)*y**3
+f = 0.0001*sympy.exp(-z)*(0.03*x**4-1.5*x**3)*y**3+10*x*y*z
+#f = z**2*(0.03*x**1-1.5*x**3)*y**3
+#f = z**2*(x**3)*y**3
 dfdx=sympy.diff(f,x)
 dfdy=sympy.diff(f,y)
 dfdz=sympy.diff(f,z)
@@ -19,10 +20,10 @@ x0 = 0.
 y0 = 0.
 z0 = 0.
 dx = 0.5
-dy = 0.1
-dz = 0.5
+dy = 0.5
+dz = 0.3
 discard_x = 1
-discard_y = 1
+discard_y = 5
 discard_z = 1
 Nx = 100
 Ny = 100
@@ -39,26 +40,17 @@ for i in range(Nx):
 
 #default values of x,y,z when they are not variable
 x_obs = 3.
-y_obs = 2.
+y_obs = 6.
 z_obs = 2.
 
-ip = Trilinear_Interpolation()
-ip.discard_points(discard_x, discard_y, discard_z)
-ip.set_steps(dx, dy, dz)
-ip.set_origin(x0, y0, z0)
-ip.initialize(A)
+ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
 
-ix = int(x0)
-iy = int(y0)
-iz = int(z0)
-
-
-X = np.linspace(x0+(1+discard_x)*dx,x0+(Nx-2-discard_x)*dx,3000)
-Y = np.linspace(y0+(1+discard_y)*dy,y0+(Ny-2-discard_y)*dy,3000)
-Z = np.linspace(z0+(1+discard_z)*dz,z0+(Nz-2-discard_z)*dz,3000)
+X = np.linspace(x0+(discard_x)*dx,x0+(Nx-2-discard_x)*dx,3000)
+Y = np.linspace(y0+(discard_y)*dy,y0+(Ny-2-discard_y)*dy,3000)
+Z = np.linspace(z0+(discard_z)*dz,z0+(Nz-2-discard_z)*dz,3000)
 
 fig=plt.figure(1,[18,12])
-fig.suptitle('red: trilinear interpolation, black: true')
+fig.suptitle('red: tricubic interpolation, black: true')
 
 ax1=fig.add_subplot(3,4,1)
 ax1.plot(X, lamf(X,y_obs,z_obs),'k')
@@ -118,7 +110,7 @@ ax10.set_xlabel('z')
 
 ax11=fig.add_subplot(3,4,11)
 ax11.plot(Z, lamdfdy(x_obs,y_obs, Z),'k')
-ax11.plot(Z, np.array([ip.ddy(x_obs,z_obs, i) for i in Z]),'r')
+ax11.plot(Z, np.array([ip.ddy(x_obs,y_obs, i) for i in Z]),'r')
 ax11.set_xlabel('z')
 
 ax12=fig.add_subplot(3,4,12)
@@ -127,4 +119,3 @@ ax12.plot(Z, np.array([ip.ddz(x_obs,y_obs, i) for i in Z]),'r')
 ax12.set_xlabel('z')
 
 plt.show(False)
-input()

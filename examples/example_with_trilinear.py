@@ -130,8 +130,8 @@ ax10.set_xlabel('z')
 
 ax11=fig.add_subplot(3,4,11)
 ax11.plot(Z, lamdfdy(x_obs,y_obs, Z),'k')
-ax11.plot(Z, np.array([ip.ddy(x_obs,z_obs, i) for i in Z]),'r')
-ax11.plot(Z, np.array([il.ddy(x_obs,z_obs, i) for i in Z]),'b')
+ax11.plot(Z, np.array([ip.ddy(x_obs,y_obs, i) for i in Z]),'r')
+ax11.plot(Z, np.array([il.ddy(x_obs,y_obs, i) for i in Z]),'b')
 ax11.set_xlabel('z')
 
 ax12=fig.add_subplot(3,4,12)
@@ -141,4 +141,3 @@ ax12.plot(Z, np.array([il.ddz(x_obs,y_obs, i) for i in Z]),'b')
 ax12.set_xlabel('z')
 
 plt.show(False)
-input()
