@@ -42,11 +42,7 @@ x_obs = 7.
 y_obs = 2.
 z_obs = 2.
 
-ip = Tricubic_Interpolation()
-ip.discard_points(discard_x, discard_y, discard_z)
-ip.set_steps(dx, dy, dz)
-ip.set_origin(x0, y0, z0)
-ip.initialize(A)
+ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
 
 il = Trilinear_Interpolation()
 il.discard_points(discard_x, discard_y, discard_z)
@@ -134,8 +130,8 @@ ax10.set_xlabel('z')
 
 ax11=fig.add_subplot(3,4,11)
 ax11.plot(Z, lamdfdy(x_obs,y_obs, Z),'k')
-ax11.plot(Z, np.array([ip.ddy(x_obs,z_obs, i) for i in Z]),'r')
-ax11.plot(Z, np.array([il.ddy(x_obs,z_obs, i) for i in Z]),'b')
+ax11.plot(Z, np.array([ip.ddy(x_obs,y_obs, i) for i in Z]),'r')
+ax11.plot(Z, np.array([il.ddy(x_obs,y_obs, i) for i in Z]),'b')
 ax11.set_xlabel('z')
 
 ax12=fig.add_subplot(3,4,12)
@@ -145,4 +141,3 @@ ax12.plot(Z, np.array([il.ddz(x_obs,y_obs, i) for i in Z]),'b')
 ax12.set_xlabel('z')
 
 plt.show(False)
-input()
