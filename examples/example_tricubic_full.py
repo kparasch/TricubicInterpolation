@@ -1,49 +1,88 @@
+import sys
+sys.path.append('..')
 from tricubic_interpolation import Tricubic_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
 #plt.style.use('kostas')
 
+plt.close('all')
+
 x,y,z = sympy.symbols('x y z')
 f = 0.0001*sympy.exp(-z)*(0.03*x**4-1.5*x**3)*y**3+10*x*y*z
-#f = z**2*(0.03*x**1-1.5*x**3)*y**3
+f = z**2*(0.03*x**1-1.5*x**3)*y**3*sympy.sin(x*y/10)
 #f = z**2*(x**3)*y**3
-dfdx=sympy.diff(f,x)
-dfdy=sympy.diff(f,y)
-dfdz=sympy.diff(f,z)
+
+# symbolic derivatives
+dfdx = sympy.diff(f,x)
+dfdy = sympy.diff(f,y)
+dfdz = sympy.diff(f,z)
+dfdxdy = sympy.diff(dfdx,y)
+dfdxdz = sympy.diff(dfdx,z)
+dfdydz = sympy.diff(dfdy,z)
+dfdxdydz = sympy.diff(dfdxdy,z)
+
+# convert symbolic functions to numerical functions
 lamf = sympy.lambdify((x,y,z), f, modules='numpy')
 lamdfdx = sympy.lambdify((x,y,z), dfdx, modules='numpy')
 lamdfdy = sympy.lambdify((x,y,z), dfdy, modules='numpy')
 lamdfdz = sympy.lambdify((x,y,z), dfdz, modules='numpy')
+lamdfdxdy = sympy.lambdify((x,y,z), dfdxdy, modules='numpy')
+lamdfdxdz = sympy.lambdify((x,y,z), dfdxdz, modules='numpy')
+lamdfdydz = sympy.lambdify((x,y,z), dfdydz, modules='numpy')
+lamdfdxdydz = sympy.lambdify((x,y,z), dfdxdydz, modules='numpy')
+
+exact_derivatives = True 
 
 x0 = 0.
 y0 = 0.
 z0 = 0.
-dx = 0.5
-dy = 0.5
-dz = 0.3
+dx = 0.5/2
+dy = 0.5/2
+dz = 0.3/2
 discard_x = 1
 discard_y = 5
 discard_z = 1
-Nx = 100
-Ny = 100
-Nz = 100
+Nx = 100*2
+Ny = 100*2
+Nz = 100*2
 
-A = np.empty([Nx,Ny,Nz])
-for i in range(Nx):
-    xi=dx*i + x0
-    for j in range(Ny):
-        yi=dy*j + y0
-        for k in range(Nz):
-            zi=dz*k + z0
-            A[i,j,k] = lamf(xi, yi, zi) 
+
+if exact_derivatives:
+    A = np.empty([Nx,Ny,Nz,8])
+    for i in range(Nx):
+        xi = dx*i + x0
+        for j in range(Ny):
+            yi = dy*j + y0
+            for k in range(Nz):
+                zi = dz*k + z0
+                A[i,j,k,0] = lamf(xi, yi, zi) 
+                A[i,j,k,1] = lamdfdx(xi, yi, zi)
+                A[i,j,k,2] = lamdfdy(xi, yi, zi)
+                A[i,j,k,3] = lamdfdz(xi, yi, zi)
+                A[i,j,k,4] = lamdfdxdy(xi, yi, zi)
+                A[i,j,k,5] = lamdfdxdz(xi, yi, zi)
+                A[i,j,k,6] = lamdfdydz(xi, yi, zi)
+                A[i,j,k,7] = lamdfdxdydz(xi, yi, zi)
+else:
+    A = np.empty([Nx,Ny,Nz])
+    for i in range(Nx):
+        xi = dx*i + x0
+        for j in range(Ny):
+            yi = dy*j + y0
+            for k in range(Nz):
+                zi = dz*k + z0
+                A[i,j,k] = lamf(xi, yi, zi) 
 
 #default values of x,y,z when they are not variable
 x_obs = 3.
 y_obs = 6.
 z_obs = 2.
 
-ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
+if exact_derivatives:
+    ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, method='Exact')
+else:
+    ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, method='FD')
 
 X = np.linspace(x0+(discard_x)*dx,x0+(Nx-2-discard_x)*dx,3000)
 Y = np.linspace(y0+(discard_y)*dy,y0+(Ny-2-discard_y)*dy,3000)

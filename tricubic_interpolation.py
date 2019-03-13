@@ -3,7 +3,7 @@ from tricubic_matrix import tricubicMat
 
 
 class Tricubic_Interpolation(object):
-    def __init__(self, A, x0=0., y0=0., z0=0., dx=1., dy=1., dz=1., discardx=1, discardy=1, discardz=1, method='Finite Differences'):
+    def __init__(self, A, x0=0., y0=0., z0=0., dx=1., dy=1., dz=1., discardx=1, discardy=1, discardz=1, method='FD'):
         self.discardx = discardx
         self.discardy = discardy
         self.discardz = discardz
@@ -21,11 +21,13 @@ class Tricubic_Interpolation(object):
             if len(A.shape) != 4:
                 raise Exception('Input array should be 4-dimensional when using exact derivatives method. It\'s not.')
             self.construct_b = self.exact_diff
-        else:
+        elif method=='FD':
             #print('Using finite difference approximation for derivatives.')
             if len(A.shape) != 3:
                 raise Exception('Input array should be 3-dimensional when using finite differences method. It\'s not.')
             self.construct_b = self.finite_diff
+        else:
+            raise ValueError('Invalid method: %s'%method)
 
 
         self.A = A[:,:,:]

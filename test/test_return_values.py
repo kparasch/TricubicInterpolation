@@ -2,7 +2,6 @@ import sys
 sys.path.append('..')
 
 from tricubic_interpolation import Tricubic_Interpolation
-from tricubic_interpolation2 import Tricubic_Interpolation2
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy

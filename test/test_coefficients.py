@@ -2,7 +2,6 @@ import sys
 sys.path.append('..')
 
 from tricubic_interpolation import Tricubic_Interpolation
-from tricubic_interpolation2 import Tricubic_Interpolation2
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
@@ -67,7 +66,7 @@ def run_test(debug=False):
     z_obs = 2.
     
     ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
-    ip2 = Tricubic_Interpolation(B, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, 'Exact')
+    ip2 = Tricubic_Interpolation(B, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, 'Exect')
     
     passed = True
     n = 1
