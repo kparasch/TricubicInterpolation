@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sympy
 
+plt.close('all')
+
 x,y,z = sympy.symbols('x y z')
 f = 0.0001*sympy.exp(-z)*(0.03*x**4-1.5*x**3)*y**3+10*x*y*z
 lamf = sympy.lambdify((x,y,z), f, modules='numpy')

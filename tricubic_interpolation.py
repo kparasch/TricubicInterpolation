@@ -278,3 +278,74 @@ class Tricubic_Interpolation(object):
                     res += k*coefs[i+4*j+16*k]*x1**i*y1**j*z1**(k-1)
         return res/self.dz
 
+
+    def ddxdy(self, x, y, z):
+
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
+        
+        if not inside_box:
+            return 0
+
+        b = self.construct_b(ix,iy,iz)
+        coefs = np.matmul(tricubicMat, b)
+        
+        res=0
+        for i in range(1,4):
+            for j in range(1,4):
+                for k in range(4):
+                    res += i*j*coefs[i+4*j+16*k]*x1**(i-1)*y1**(j-1)*z1**k
+        return res/self.dx/self.dy
+
+
+    def ddxdz(self, x, y, z):
+
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
+        
+        if not inside_box:
+            return 0
+
+        b = self.construct_b(ix,iy,iz)
+        coefs = np.matmul(tricubicMat, b)
+        
+        res=0
+        for i in range(1,4):
+            for j in range(4):
+                for k in range(1,4):
+                    res += i*k*coefs[i+4*j+16*k]*x1**(i-1)*y1**j*z1**(k-1)
+        return res/self.dx/self.dz
+
+
+    def ddydz(self, x, y, z):
+
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
+        
+        if not inside_box:
+            return 0
+
+        b = self.construct_b(ix,iy,iz)
+        coefs = np.matmul(tricubicMat, b)
+        
+        res=0
+        for i in range(4):
+            for j in range(1,4):
+                for k in range(1,4):
+                    res += j*k*coefs[i+4*j+16*k]*x1**i*y1**(j-1)*z1**(k-1)
+        return res/self.dy/self.dz
+
+
+    def ddxdydz(self, x, y, z):
+
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
+        
+        if not inside_box:
+            return 0
+
+        b = self.construct_b(ix,iy,iz)
+        coefs = np.matmul(tricubicMat, b)
+        
+        res=0
+        for i in range(1,4):
+            for j in range(1,4):
+                for k in range(1,4):
+                    res += i*j*k*coefs[i+4*j+16*k]*x1**(i-1)*y1**(j-1)*z1**(k-1)
+        return res/self.dx/self.dy/self.dz

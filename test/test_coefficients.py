@@ -65,8 +65,7 @@ def run_test(debug=False):
     y_obs = 6.
     z_obs = 2.
     
-    ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
-    ip2 = Tricubic_Interpolation(B, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, 'Exect')
+    ip = Tricubic_Interpolation(B, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, 'Exact')
     
     passed = True
     n = 1
@@ -74,20 +73,15 @@ def run_test(debug=False):
         xv = np.random.rand()*(Nx-3-2*discard_x)*dx + x0 +discard_x*dx
         yv = np.random.rand()*(Ny-3-2*discard_y)*dy + y0 +discard_y*dy
         zv = np.random.rand()*(Nz-3-2*discard_z)*dz + z0 +discard_z*dz
-        #ix1,iy1,iz1 = ip.coords_to_indices(xv,yv,zv)
-        ix2,iy2,iz2 = ip2.coords_to_indices(xv,yv,zv)
-        #coefs1 = ip.get_coefs(ip.construct_b(ix1, iy1, iz1))
-        coefs2 = ip2.get_coefs(ip2.construct_b(ix2, iy2, iz2))
-        fxyz = sympy.simplify(sum([ (coefs2[i + 4*j + 16*k]) * ((x-ix2)/dx)**i * ((y-iy2)/dy)**j * ((z-iz2)/dz)**k for i in range(4) for j in range(4) for k in range(4)]))
-#        passed = passed and np.array_equal(coefs_true, coefs2)
+        ix,iy,iz = ip.coords_to_indices(xv,yv,zv)
+        coefs = ip.get_coefs(ip.construct_b(ix, iy, iz))
+        fxyz = sympy.simplify(sum([ (coefs[i + 4*j + 16*k]) * ((x-ix)/dx)**i * ((y-iy)/dy)**j * ((z-iz)/dz)**k for i in range(4) for j in range(4) for k in range(4)]))
         if debug:
             print('Output (transformed) polynomial:')
             print(fxyz)
             print('Input coefficients:')
             print(coefs_true)
-        #print(coefs2)
         
-        #fxyz = f
         coefs_test = np.zeros([64])
         for Terms_fyz in sympy.Poly(fxyz,x).all_terms():
             ii = Terms_fyz[0][0]
@@ -98,7 +92,7 @@ def run_test(debug=False):
                 for Terms_f in sympy.Poly(fz,z).all_terms():
                     kk = Terms_f[0][0]
                     coef = Terms_f[1]
-                    coefs_test[ii + 4 * jj + 16 * kk] = int(coef)
+                    coefs_test[ii + 4 * jj + 16 * kk] = coef#int(coef)
                 
         passed = passed and np.array_equal(coefs_true, coefs_test)
         if debug:
@@ -108,7 +102,7 @@ def run_test(debug=False):
 
 
 n_tests = 5
-debug = True
+debug = False
 
 
 passed_flag = True

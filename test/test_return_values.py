@@ -72,13 +72,21 @@ def run_test(debug=False):
         output_true  = np.array([ lamf(xv,yv,zv),
                                   lamdfdx(xv,yv,zv),
                                   lamdfdy(xv,yv,zv),
-                                  lamdfdz(xv,yv,zv)
+                                  lamdfdz(xv,yv,zv),
+                                  lamdfdxdy(xv,yv,zv),
+                                  lamdfdxdz(xv,yv,zv),
+                                  lamdfdydz(xv,yv,zv),
+                                  lamdfdxdydz(xv,yv,zv)
                                 ])
 
         output_test = np.array([ ip.val(xv,yv,zv),
                                  ip.ddx(xv,yv,zv),
                                  ip.ddy(xv,yv,zv),
-                                 ip.ddz(xv,yv,zv)
+                                 ip.ddz(xv,yv,zv),
+                                 ip.ddxdy(xv,yv,zv),
+                                 ip.ddxdz(xv,yv,zv),
+                                 ip.ddydz(xv,yv,zv),
+                                 ip.ddxdydz(xv,yv,zv)
                                ])
 
         if debug:       

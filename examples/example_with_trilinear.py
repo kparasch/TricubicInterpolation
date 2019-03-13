@@ -5,6 +5,8 @@ import numpy as np
 import sympy
 #plt.style.use('kostas')
 
+plt.close('all')
+
 x,y,z = sympy.symbols('x y z')
 f = 0.0001*sympy.exp(-z)*(0.03*x**4-1.5*x**3)*y**3
 dfdx=sympy.diff(f,x)

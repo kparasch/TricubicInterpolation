@@ -1,5 +1,4 @@
 import numpy as np
-from tricubic_matrix import tricubicMat
 
 class Trilinear_Interpolation:
     def __init__(self):
