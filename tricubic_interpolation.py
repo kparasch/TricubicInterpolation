@@ -349,3 +349,58 @@ class Tricubic_Interpolation(object):
                 for k in range(1,4):
                     res += i*j*k*coefs[i+4*j+16*k]*x1**(i-1)*y1**(j-1)*z1**(k-1)
         return res/self.dx/self.dy/self.dz
+
+
+    def ddx2(self, x, y, z):
+
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
+        
+        if not inside_box:
+            return 0
+
+        b = self.construct_b(ix,iy,iz)
+        coefs = np.matmul(tricubicMat, b)
+        
+        res=0
+        for i in range(2,4):
+            for j in range(4):
+                for k in range(4):
+                    res += (i-1)*i*coefs[i+4*j+16*k]*x1**(i-2)*y1**j*z1**k
+        return res/self.dx/self.dx
+
+
+    def ddy2(self, x, y, z):
+
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
+        
+        if not inside_box:
+            return 0
+
+        b = self.construct_b(ix,iy,iz)
+        coefs = np.matmul(tricubicMat, b)
+
+        res=0
+        for i in range(4):
+            for j in range(2,4):
+                for k in range(4):
+                    res += (j-1)*j*coefs[i+4*j+16*k]*x1**i*y1**(j-2)*z1**k
+        return res/self.dy/self.dy
+
+
+    def ddz2(self, x, y, z):
+
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
+        
+        if not inside_box:
+            return 0
+
+        b = self.construct_b(ix,iy,iz)
+        coefs = np.matmul(tricubicMat, b)
+
+        res=0
+        for i in range(4):
+            for j in range(4):
+                for k in range(2,4):
+                    res += (k-1)*k*coefs[i+4*j+16*k]*x1**i*y1**j*z1**(k-2)
+        return res/self.dz/self.dz
+
