@@ -176,6 +176,17 @@ class Tricubic_Interpolation(object):
         return ix, iy, iz
 
 
+    def check_if_inside_box(self, ix, iy, iz):
+        inside_box = True
+        if   ix < self.ix_bound_low or ix > self.ix_bound_up:
+            inside_box = False
+        elif iy < self.iy_bound_low or iy > self.iy_bound_up:
+            inside_box = False
+        elif iz < self.iz_bound_low or iz > self.iz_bound_up:
+            inside_box = False
+
+        return inside_box
+
     def coords_to_indices_and_floats(self, x, y, z):
         
         fx = (x - self.x0)/self.dx
@@ -190,13 +201,7 @@ class Tricubic_Interpolation(object):
         y1 = fy - iy
         z1 = fz - iz
 
-        inside_box = True
-        if   ix < self.ix_bound_low or ix > self.ix_bound_up:
-            inside_box = False
-        elif iy < self.iy_bound_low or iy > self.iy_bound_up:
-            inside_box = False
-        elif iz < self.iz_bound_low or iz > self.iz_bound_up:
-            inside_box = False
+        inside_box = self.check_if_inside_box(ix, iy, iz)
 
         if not inside_box:
             print('***WARNING: Coordinates outside bounding box.***')
@@ -350,7 +355,32 @@ class Tricubic_Interpolation(object):
                     res += i*j*k*coefs[i+4*j+16*k]*x1**(i-1)*y1**(j-1)*z1**(k-1)
         return res/self.dx/self.dy/self.dz
 
+    def laplacian(self, ix, iy, iz, x1, y1, z1):
+        
+        b = self.construct_b(ix, iy, iz)
+        coefs = np.matmul(tricubicMat, b)
 
+
+        res_ddx2=0
+        for i in range(2,4):
+            for j in range(4):
+                for k in range(4):
+                    res_ddx2 += (i-1)*i*coefs[i+4*j+16*k]*x1**(i-2)*y1**j*z1**k
+                    
+        res_ddy2=0
+        for i in range(4):
+            for j in range(2,4):
+                for k in range(4):
+                    res_ddy2 += (j-1)*j*coefs[i+4*j+16*k]*x1**i*y1**(j-2)*z1**k
+
+        res_ddz2=0
+        for i in range(4):
+            for j in range(4):
+                for k in range(2,4):
+                    res_ddz2 += (k-1)*k*coefs[i+4*j+16*k]*x1**i*y1**j*z1**(k-2)
+
+        return res_ddx2/self.dx/self.dx + res_ddy2/self.dy/self.dy #+ res_ddz2/self.dz/self.dz
+        
     def ddx2(self, x, y, z):
 
         ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
