@@ -175,6 +175,29 @@ class Tricubic_Interpolation(object):
 
         return ix, iy, iz
 
+    
+    def is_inside_box(self, x, y, z):
+        fx = (x - self.x0)/self.dx
+        fy = (y - self.y0)/self.dy
+        fz = (z - self.z0)/self.dz
+
+        ix = int(fx)
+        iy = int(fy)
+        iz = int(fz)
+
+        x1 = fx - ix
+        y1 = fy - iy
+        z1 = fz - iz
+
+        inside_box = True
+        if   ix < self.ix_bound_low or ix > self.ix_bound_up:
+            inside_box = False
+        elif iy < self.iy_bound_low or iy > self.iy_bound_up:
+            inside_box = False
+        elif iz < self.iz_bound_low or iz > self.iz_bound_up:
+            inside_box = False
+
+        return inside_box
 
     def coords_to_indices_and_floats(self, x, y, z):
         
