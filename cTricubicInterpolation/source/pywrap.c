@@ -18,14 +18,14 @@ static PyObject* get_val(PyObject* self, PyObject* args)
         return NULL;
 
     double* c_A = (double*)PyArray_DATA((PyArrayObject*)py_A);
-    int nd = (int)PyArray_NDIM((PyArrayObject*)py_A);
+    // int nd = (int)PyArray_NDIM((PyArrayObject*)py_A);
        
     int* shape = (int*)PyArray_DIMS((PyArrayObject*)py_A);
-
+    double* b = NULL;
     if(method == 1)
-        double* b = finite_diff(shape[1], shape[2], c_A, ix, iy, iz);
+        b = finite_diff(shape[1], shape[2], c_A, ix, iy, iz);
     else if(method == 2)
-        double* b = exact_diff(shape[1], shape[2], shape[3], c_A, ix, iy, iz, dx, dy, dz);
+        b = exact_diff(shape[1], shape[2], shape[3], c_A, ix, iy, iz, dx, dy, dz);
     else
     {
         printf("Method not recognized");

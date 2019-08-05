@@ -7,6 +7,8 @@
 #include <numpy/arrayobject.h>
 
 #include "evaluate.h"
+#include "coefs.h"
+#include "derivs.h"
 
 static PyObject* get_val(PyObject* self, PyObject* args);
 
