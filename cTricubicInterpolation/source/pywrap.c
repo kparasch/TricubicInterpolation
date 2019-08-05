@@ -8,7 +8,7 @@ static PyObject* get_val(PyObject* self, PyObject* args)
     double dx, dy, dz;
     int method;
     PyObject *arg1 = NULL;
-    if(!PyArg_ParseTyple(args, "0!iiiddddddi", &PyArray_Type, &arg1, &ix, &iy, &iz, &xn, &yn, &zn, &dx, &dy, &dz, &method))
+    if(!PyArg_ParseTuple(args, "0!iiiddddddi", &PyArray_Type, &arg1, &ix, &iy, &iz, &xn, &yn, &zn, &dx, &dy, &dz, &method))
         return NULL;
 
     PyObject *py_A = NULL;
