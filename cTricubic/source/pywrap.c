@@ -1,7 +1,7 @@
 #include "pywrap.h"
+#include <stdio.h>
 
 #define TRICUBIC_PROTOTYPE_GET_MACRO                                           \
-                                                                               \
     double dx, dy, dz;                                                         \
     double x, y, z;                                                            \
     double x0, y0, z0;                                                         \
@@ -11,17 +11,14 @@
     int iz_bound_low, iz_bound_up;                                             \
                                                                                \
     int method;                                                                \
-    PyObject *arg1 = NULL;                                                     \
-    if(!PyArg_ParseTuple(args, "O!dddddddddiiiiiii", &PyArray_Type, &arg1, &x, \
+    PyArrayObject *py_A = NULL;                                                \
+    if(!PyArg_ParseTuple(args, "Odddddddddiiiiiii", &py_A, &x,                 \
                          &y, &z, &x0, &y0, &z0, &dx, &dy, &dz, &ix_bound_low,  \
                          &ix_bound_up, &iy_bound_low, &iy_bound_up,            \
                          &iz_bound_low, &iz_bound_up, &method                  \
                         )                                                      \
       )                                                                        \
         return NULL;                                                           \
-                                                                               \
-    PyObject *py_A = NULL;                                                     \
-    py_A = PyArray_FROM_OTF(arg1, NPY_FLOAT64, NPY_ARRAY_IN_ARRAY);            \
                                                                                \
     if(py_A == NULL)                                                           \
         return NULL;                                                           \
@@ -81,7 +78,6 @@ static PyObject* tricubic_get_val(PyObject* self, PyObject* args)
 
     free(coefs);
     free(b);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("d", val);
 }
@@ -94,7 +90,6 @@ static PyObject* tricubic_get_ddx(PyObject* self, PyObject* args)
 
     free(coefs);
     free(b);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("d", val);
 }
@@ -107,7 +102,6 @@ static PyObject* tricubic_get_ddy(PyObject* self, PyObject* args)
 
     free(coefs);
     free(b);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("d", val);
 }
@@ -120,7 +114,6 @@ static PyObject* tricubic_get_ddz(PyObject* self, PyObject* args)
 
     free(coefs);
     free(b);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("d", val);
 }
@@ -133,7 +126,6 @@ static PyObject* tricubic_get_ddxdy(PyObject* self, PyObject* args)
 
     free(coefs);
     free(b);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("d", val);
 }
@@ -146,7 +138,6 @@ static PyObject* tricubic_get_ddxdz(PyObject* self, PyObject* args)
 
     free(coefs);
     free(b);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("d", val);
 }
@@ -159,7 +150,6 @@ static PyObject* tricubic_get_ddydz(PyObject* self, PyObject* args)
 
     free(coefs);
     free(b);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("d", val);
 }
@@ -172,7 +162,6 @@ static PyObject* tricubic_get_ddxdydz(PyObject* self, PyObject* args)
 
     free(coefs);
     free(b);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("d", val);
 }
@@ -183,7 +172,6 @@ static PyObject* tricubic_py_coords_to_indices(PyObject* self, PyObject* args)
 
     free(coefs);
     free(b);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("iii", ix, iy, iz);
 }
@@ -199,7 +187,6 @@ static PyObject* tricubic_py_get_b(PyObject* self, PyObject* args)
     PyArray_ENABLEFLAGS((PyArrayObject *) b_numpy, NPY_ARRAY_OWNDATA);
 
     free(coefs);
-    Py_DECREF(py_A);
 
     return Py_BuildValue("N", b_numpy);
 }
