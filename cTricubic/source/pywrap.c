@@ -206,16 +206,26 @@ static PyObject* tricubic_py_get_b(PyObject* self, PyObject* args)
 
 static PyObject* tricubic_py_get_coefs(PyObject* self, PyObject* args)
 {
-    TRICUBIC_PROTOTYPE_GET_MACRO
     
+    PyObject *arg1 = NULL;
+    if(!PyArg_ParseTuple(args, "O!", &PyArray_Type, &arg1))
+         return NULL;
+
+    PyObject *py_b = NULL;                                                     
+    py_b = PyArray_FROM_OTF(arg1, NPY_FLOAT64, NPY_ARRAY_IN_ARRAY);            
+                                                                               
+    if(py_b == NULL)                                                           
+        return NULL;                                                           
+                                                                               
+    double* c_b = (double*)PyArray_DATA((PyArrayObject*)py_b);                 
+    double* coefs = tricubic_get_coefs(c_b);
     npy_intp dims[1];
     dims[0] = 64;
 
     PyObject* coefs_numpy = PyArray_SimpleNewFromData(1, dims, NPY_FLOAT64, (void*) coefs);
     PyArray_ENABLEFLAGS((PyArrayObject *) coefs_numpy, NPY_ARRAY_OWNDATA);
 
-    free(b);
-    Py_DECREF(py_A);
+    Py_DECREF(py_b);
 
     return Py_BuildValue("N", coefs_numpy);
 }

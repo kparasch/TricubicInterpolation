@@ -60,8 +60,8 @@ class Tricubic_Interpolation(object):
     def construct_b(self, x, y, z):
         return tricubic_py_get_b(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
-    def get_coefs(self, x, y, z):
-        return tricubic_py_get_coefs(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
+    def get_coefs(self, b):
+        return tricubic_py_get_coefs(b)
 
 
     def coords_to_indices(self, x, y, z):
