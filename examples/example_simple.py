@@ -1,6 +1,7 @@
 import sys
-sys.path.append('..')
-from tricubic_interpolation import Tricubic_Interpolation
+sys.path.append('../..')
+#from TricubicInterpolation.pyTricubic import Tricubic_Interpolation
+from TricubicInterpolation.cTricubic import Tricubic_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy

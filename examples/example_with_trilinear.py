@@ -1,5 +1,7 @@
-from tricubic_interpolation import Tricubic_Interpolation
-from trilinear_interpolation import Trilinear_Interpolation
+import sys
+sys.path.append('../..')
+from TricubicInterpolation.pyTricubic import Trilinear_Interpolation
+from TricubicInterpolation.cTricubic import Tricubic_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
@@ -142,4 +144,4 @@ ax12.plot(Z, np.array([ip.ddz(x_obs,y_obs, i) for i in Z]),'r')
 ax12.plot(Z, np.array([il.ddz(x_obs,y_obs, i) for i in Z]),'b')
 ax12.set_xlabel('z')
 
-plt.show(False)
+plt.show()
