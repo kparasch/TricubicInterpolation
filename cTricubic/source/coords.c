@@ -13,7 +13,7 @@ void tricubic_coords_to_indices(double x, double y, double z, double x0, double 
     return;
 }
 
-bool tricubic_coords_to_indices_and_floats(double x, double y, double z, double x0, double y0, double z0, double dx, double dy, double dz, int &ix, int &iy, int &iz, double &xn, double &yn, double &zn, int ix_bound_low, int ix_bound_up, int iy_bound_low, int iy_bound_up, int iz_bound_low, int iz_bound_up)
+int tricubic_coords_to_indices_and_floats(double x, double y, double z, double x0, double y0, double z0, double dx, double dy, double dz, int &ix, int &iy, int &iz, double &xn, double &yn, double &zn, int ix_bound_low, int ix_bound_up, int iy_bound_low, int iy_bound_up, int iz_bound_low, int iz_bound_up)
 {
 
 
@@ -29,13 +29,13 @@ bool tricubic_coords_to_indices_and_floats(double x, double y, double z, double 
     yn = fy - iy;
     zn = fz - iz;
 
-    bool inside_box = true;
+    int inside_box = 1;
     if( ix < ix_bound_low || ix > ix_bound_up )
-        inside_box = false;
+        inside_box = 0;
     else if( iy < iy_bound_low || iy > iy_bound_up )
-        inside_box = false;
+        inside_box = 0;
     else if( iz < iz_bound_low || iz > iz_bound_up )
-        inside_box = false;
+        inside_box = 0;
 
     return inside_box;
 
