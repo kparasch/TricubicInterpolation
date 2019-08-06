@@ -1,23 +1,32 @@
 #include "evaluate.h"
 
-double eval(double* coefs, double xn, double yn, double zn)
+void xyz_powers(double xn, double yn, double zn, double* xni, double* ynj, double* znk)
+{
+    xni[0] = 1.;
+    ynj[0] = 1.;
+    znk[0] = 1.;
+
+    for(int i = 1; i < 4; i++)
+    {
+        xni[i] = xni[i-1]*xn;
+        ynj[i] = ynj[i-1]*yn;
+        znk[i] = znk[i-1]*zn;
+    }
+
+    return;
+}
+
+double eval(double* coefs, double* xn, double* yn, double* zn)
 {
     double result = 0.;
-    
-    double xni = 1./xn; //xni = xn**i
-    double ynj = 1./yn; //ynj = yn**j
-    double znk = 1./zn; //znk = zn**k
 
     for(int i = 0; i < 4; i++)
     {
-        xni *= xn; 
         for(int j = 0; j < 4; j++)
         {
-            ynj *= yn;
             for(int k = 0; k < 4; k++)
             {
-                znk *= zn;
-                result += ( ( (coefs[i + 4 * j + 16 * k] * xni) * ynj) * znk);
+                result += ( ( (coefs[i + 4 * j + 16 * k] * xn[i]) * yn[j]) * zn[k]);
             }
         }
     }
@@ -25,24 +34,18 @@ double eval(double* coefs, double xn, double yn, double zn)
     return result;
 }
 
-double ddx(double* coefs, double xn, double yn, double zn, double dx)
+double ddx(double* coefs, double* xn, double* yn, double* zn, double dx)
 {
     double result = 0.;
     
-    double xni = 1./xn; //xni = xn**i
-    double ynj = 1./yn; //ynj = yn**j
-    double znk = 1./zn; //znk = zn**k
 
     for(int i = 1; i < 4; i++)
     {
-        xni *= xn; 
         for(int j = 0; j < 4; j++)
         {
-            ynj *= yn;
             for(int k = 0; k < 4; k++)
             {
-                znk *= zn;
-                result += i * ( ( (coefs[i + 4 * j + 16 * k] * xni) * ynj) * znk);
+                result += i * ( ( (coefs[i + 4 * j + 16 * k] * xn[i-1]) * yn[j]) * zn[k]);
             }
         }
     }
@@ -53,24 +56,17 @@ double ddx(double* coefs, double xn, double yn, double zn, double dx)
 }
 
 
-double ddy(double* coefs, double xn, double yn, double zn, double dy)
+double ddy(double* coefs, double* xn, double* yn, double* zn, double dy)
 {
     double result = 0.;
     
-    double xni = 1./xn; //xni = xn**i
-    double ynj = 1./yn; //ynj = yn**j
-    double znk = 1./zn; //znk = zn**k
-
     for(int i = 0; i < 4; i++)
     {
-        xni *= xn; 
         for(int j = 1; j < 4; j++)
         {
-            ynj *= yn;
             for(int k = 0; k < 4; k++)
             {
-                znk *= zn;
-                result += j * ( ( (coefs[i + 4 * j + 16 * k] * xni) * ynj) * znk);
+                result += j * ( ( (coefs[i + 4 * j + 16 * k] * xn[i]) * yn[j-1]) * zn[k]);
             }
         }
     }
@@ -80,24 +76,17 @@ double ddy(double* coefs, double xn, double yn, double zn, double dy)
     return result;
 }
 
-double ddz(double* coefs, double xn, double yn, double zn, double dz)
+double ddz(double* coefs, double* xn, double* yn, double* zn, double dz)
 {
     double result = 0.;
-    
-    double xni = 1./xn; //xni = xn**i
-    double ynj = 1./yn; //ynj = yn**j
-    double znk = 1./zn; //znk = zn**k
 
     for(int i = 0; i < 4; i++)
     {
-        xni *= xn; 
         for(int j = 0; j < 4; j++)
         {
-            ynj *= yn;
             for(int k = 1; k < 4; k++)
             {
-                znk *= zn;
-                result += k * ( ( (coefs[i + 4 * j + 16 * k] * xni) * ynj) * znk);
+                result += k * ( ( (coefs[i + 4 * j + 16 * k] * xn[i]) * yn[j]) * zn[k-1]);
             }
         }
     }
@@ -108,24 +97,17 @@ double ddz(double* coefs, double xn, double yn, double zn, double dz)
 }
 
 
-double ddxdy(double* coefs, double xn, double yn, double zn, double dx, double dy)
+double ddxdy(double* coefs, double* xn, double* yn, double* zn, double dx, double dy)
 {
     double result = 0.;
     
-    double xni = 1./xn; //xni = xn**i
-    double ynj = 1./yn; //ynj = yn**j
-    double znk = 1./zn; //znk = zn**k
-
     for(int i = 1; i < 4; i++)
     {
-        xni *= xn; 
         for(int j = 1; j < 4; j++)
         {
-            ynj *= yn;
             for(int k = 0; k < 4; k++)
             {
-                znk *= zn;
-                result += (i * j) * ( ( (coefs[i + 4 * j + 16 * k] * xni) * ynj) * znk);
+                result += (i * j) * ( ( (coefs[i + 4 * j + 16 * k] * xn[i-1]) * yn[j-1]) * zn[k]);
             }
         }
     }
@@ -135,24 +117,17 @@ double ddxdy(double* coefs, double xn, double yn, double zn, double dx, double d
     return result;
 }
 
-double ddxdz(double* coefs, double xn, double yn, double zn, double dx, double dz)
+double ddxdz(double* coefs, double* xn, double* yn, double* zn, double dx, double dz)
 {
     double result = 0.;
     
-    double xni = 1./xn; //xni = xn**i
-    double ynj = 1./yn; //ynj = yn**j
-    double znk = 1./zn; //znk = zn**k
-
     for(int i = 1; i < 4; i++)
     {
-        xni *= xn; 
         for(int j = 0; j < 4; j++)
         {
-            ynj *= yn;
             for(int k = 1; k < 4; k++)
             {
-                znk *= zn;
-                result += (i * k) * ( ( (coefs[i + 4 * j + 16 * k] * xni) * ynj) * znk);
+                result += (i * k) * ( ( (coefs[i + 4 * j + 16 * k] * xn[i-1]) * yn[j]) * zn[k-1]);
             }
         }
     }
@@ -162,24 +137,17 @@ double ddxdz(double* coefs, double xn, double yn, double zn, double dx, double d
     return result;
 }
 
-double ddydz(double* coefs, double xn, double yn, double zn, double dy, double dz)
+double ddydz(double* coefs, double* xn, double* yn, double* zn, double dy, double dz)
 {
     double result = 0.;
     
-    double xni = 1./xn; //xni = xn**i
-    double ynj = 1./yn; //ynj = yn**j
-    double znk = 1./zn; //znk = zn**k
-
     for(int i = 0; i < 4; i++)
     {
-        xni *= xn; 
         for(int j = 1; j < 4; j++)
         {
-            ynj *= yn;
             for(int k = 1; k < 4; k++)
             {
-                znk *= zn;
-                result += (j * k) * ( ( (coefs[i + 4 * j + 16 * k] * xni) * ynj) * znk);
+                result += (j * k) * ( ( (coefs[i + 4 * j + 16 * k] * xn[i]) * yn[j-1]) * zn[k]);
             }
         }
     }
@@ -189,24 +157,17 @@ double ddydz(double* coefs, double xn, double yn, double zn, double dy, double d
     return result;
 }
 
-double ddxdydz(double* coefs, double xn, double yn, double zn, double dx, double dy, double dz)
+double ddxdydz(double* coefs, double* xn, double* yn, double* zn, double dx, double dy, double dz)
 {
     double result = 0.;
     
-    double xni = 1./xn; //xni = xn**i
-    double ynj = 1./yn; //ynj = yn**j
-    double znk = 1./zn; //znk = zn**k
-
     for(int i = 1; i < 4; i++)
     {
-        xni *= xn; 
         for(int j = 1; j < 4; j++)
         {
-            ynj *= yn;
             for(int k = 1; k < 4; k++)
             {
-                znk *= zn;
-                result += ( (i * j) * k) * ( ( (coefs[i + 4 * j + 16 * k] * xni) * ynj) * znk);
+                result += ( (i * j) * k) * ( ( (coefs[i + 4 * j + 16 * k] * xn[i-1]) * yn[j-1]) * zn[k-1]);
             }
         }
     }
