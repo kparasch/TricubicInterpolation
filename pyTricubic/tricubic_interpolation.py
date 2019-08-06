@@ -1,5 +1,5 @@
 import numpy as np
-from tricubic_matrix import tricubicMat
+from .tricubic_matrix import tricubicMat
 
 
 class Tricubic_Interpolation(object):

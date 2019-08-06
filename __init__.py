@@ -1,2 +1,2 @@
-from .tricubic_interpolation import *
-from .trilinear_interpolation import *
+from . import cTricubic
+from . import pyTricubic

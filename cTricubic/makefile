@@ -15,12 +15,12 @@ ldflags =  -lm #-lpython
 
 all: Tricubic_c.so Tricubic2_c.so
 py3: Tricubic_c.so
-py2: Tricubic_c.so
+py2: Tricubic2_c.so
 
 Tricubic_c.so: $(objects) $(objdir)/pywrap3.o
 	@$(cc) --shared -fPIC $(cflags) $^ -o $@ $(ldflags) 
 
-Tricubic_c.so: $(objects) $(objdir)/pywrap2.o
+Tricubic2_c.so: $(objects) $(objdir)/pywrap2.o
 	@$(cc) --shared -fPIC $(cflags) $^ -o $@ $(ldflags) 
 
 $(objdir)/coefs.o: $(srcdir)/coefs.c $(incdir)/coefs.h 
