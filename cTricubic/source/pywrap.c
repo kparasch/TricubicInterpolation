@@ -177,6 +177,50 @@ static PyObject* tricubic_get_ddxdydz(PyObject* self, PyObject* args)
     return Py_BuildValue("d", val);
 }
 
+static PyObject* tricubic_py_coords_to_indices(PyObject* self, PyObject* args)
+{
+    TRICUBIC_PROTOTYPE_GET_MACRO
+
+    free(coefs);
+    free(b);
+    Py_DECREF(py_A);
+
+    return Py_BuildValue("iii", ix, iy, iz);
+}
+
+static PyObject* tricubic_py_get_b(PyObject* self, PyObject* args)
+{
+    TRICUBIC_PROTOTYPE_GET_MACRO
+    
+    npy_intp dims[1];
+    dims[0] = 64;
+
+    PyObject* b_numpy = PyArray_SimpleNewFromData(1, dims, NPY_FLOAT64, (void*) b);
+    PyArray_ENABLEFLAGS((PyArrayObject *) b_numpy, NPY_ARRAY_OWNDATA);
+
+    free(coefs);
+    Py_DECREF(py_A);
+
+    return Py_BuildValue("N", b_numpy);
+}
+
+static PyObject* tricubic_py_get_coefs(PyObject* self, PyObject* args)
+{
+    TRICUBIC_PROTOTYPE_GET_MACRO
+    
+    npy_intp dims[1];
+    dims[0] = 64;
+
+    PyObject* coefs_numpy = PyArray_SimpleNewFromData(1, dims, NPY_FLOAT64, (void*) coefs);
+    PyArray_ENABLEFLAGS((PyArrayObject *) coefs_numpy, NPY_ARRAY_OWNDATA);
+
+    free(b);
+    Py_DECREF(py_A);
+
+    return Py_BuildValue("N", coefs_numpy);
+}
+
+
 static PyMethodDef TricubicMethods[] = 
 {
     {"tricubic_get_val", tricubic_get_val, METH_VARARGS, "returns interpolated value"},
@@ -187,6 +231,9 @@ static PyMethodDef TricubicMethods[] =
     {"tricubic_get_ddxdz", tricubic_get_ddxdz, METH_VARARGS, "returns interpolated first derivative with respect to x and z"},
     {"tricubic_get_ddydz", tricubic_get_ddydz, METH_VARARGS, "returns interpolated first derivative with respect to y and z"},
     {"tricubic_get_ddxdydz", tricubic_get_ddxdydz, METH_VARARGS, "returns interpolated first derivative with respect to x, y and z"},
+    {"tricubic_py_coords_to_indices", tricubic_py_coords_to_indices, METH_VARARGS, "returns indices."},
+    {"tricubic_py_get_b", tricubic_py_get_b, METH_VARARGS, "returns b."},
+    {"tricubic_py_get_coefs", tricubic_py_get_coefs, METH_VARARGS, "returns coefs."},
     {NULL, NULL, 0, NULL}
 };
 

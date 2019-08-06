@@ -57,42 +57,18 @@ class Tricubic_Interpolation(object):
         if self.iz_bound_up <= self.iz_bound_low:
             raise Exception('Interpolating array is too small along the third dimension (after discards).')
 
+    def construct_b(self, x, y, z):
+        return tricubic_py_get_b(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
+
+    def get_coefs(self, x, y, z):
+        return tricubic_py_get_coefs(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
+
 
     def coords_to_indices(self, x, y, z):
-        
-        fx = (x - self.x0)/self.dx
-        fy = (y - self.y0)/self.dy
-        fz = (z - self.z0)/self.dz
-
-        ix = int(fx)
-        iy = int(fy)
-        iz = int(fz)
-
-        return ix, iy, iz
-
+        return tricubic_py_coords_to_indices(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
     
     def is_inside_box(self, x, y, z):
-        fx = (x - self.x0)/self.dx
-        fy = (y - self.y0)/self.dy
-        fz = (z - self.z0)/self.dz
-
-        ix = int(fx)
-        iy = int(fy)
-        iz = int(fz)
-
-        x1 = fx - ix
-        y1 = fy - iy
-        z1 = fz - iz
-
-        inside_box = True
-        if   ix < self.ix_bound_low or ix > self.ix_bound_up:
-            inside_box = False
-        elif iy < self.iy_bound_low or iy > self.iy_bound_up:
-            inside_box = False
-        elif iz < self.iz_bound_low or iz > self.iz_bound_up:
-            inside_box = False
-
-        return inside_box
+        return tricubic_py_is_inside_box(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
     def coords_to_indices_and_floats(self, x, y, z):
         
@@ -123,184 +99,25 @@ class Tricubic_Interpolation(object):
         return ix, iy, iz, x1, y1, z1, inside_box
     
     def val(self, x, y, z):
-        
-        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-
-        if not inside_box:
-            return 0
-
-        return get_val(self.A, ix, iy, iz, x1, y1, z1, self.dx, self.dy, self.dz, self.imethod)
-        
-
+        return tricubic_get_val(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
     def ddx(self, x, y, z):
+        return tricubic_get_ddx(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
-        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-        
-        if not inside_box:
-            return 0
+    def ddy(self, x, y, z):
+        return tricubic_get_ddy(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
-        return get_ddx(self.A, ix, iy, iz, x1, y1, z1, self.dx, self.dy, self.dz, self.imethod)
+    def ddz(self, x, y, z):
+        return tricubic_get_ddz(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
-#
-#    def ddy(self, x, y, z):
-#
-#        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-#        
-#        if not inside_box:
-#            return 0
-#
-#        b = self.construct_b(ix,iy,iz)
-#        coefs = np.matmul(tricubicMat, b)
-#
-#        res=0
-#        for i in range(4):
-#            for j in range(1,4):
-#                for k in range(4):
-#                    res += j*coefs[i+4*j+16*k]*x1**i*y1**(j-1)*z1**k
-#        return res/self.dy
-#
-#
-#    def ddz(self, x, y, z):
-#
-#        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-#        
-#        if not inside_box:
-#            return 0
-#
-#        b = self.construct_b(ix,iy,iz)
-#        coefs = np.matmul(tricubicMat, b)
-#
-#        res=0
-#        for i in range(4):
-#            for j in range(4):
-#                for k in range(1,4):
-#                    res += k*coefs[i+4*j+16*k]*x1**i*y1**j*z1**(k-1)
-#        return res/self.dz
-#
-#
-#    def ddxdy(self, x, y, z):
-#
-#        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-#        
-#        if not inside_box:
-#            return 0
-#
-#        b = self.construct_b(ix,iy,iz)
-#        coefs = np.matmul(tricubicMat, b)
-#        
-#        res=0
-#        for i in range(1,4):
-#            for j in range(1,4):
-#                for k in range(4):
-#                    res += i*j*coefs[i+4*j+16*k]*x1**(i-1)*y1**(j-1)*z1**k
-#        return res/self.dx/self.dy
-#
-#
-#    def ddxdz(self, x, y, z):
-#
-#        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-#        
-#        if not inside_box:
-#            return 0
-#
-#        b = self.construct_b(ix,iy,iz)
-#        coefs = np.matmul(tricubicMat, b)
-#        
-#        res=0
-#        for i in range(1,4):
-#            for j in range(4):
-#                for k in range(1,4):
-#                    res += i*k*coefs[i+4*j+16*k]*x1**(i-1)*y1**j*z1**(k-1)
-#        return res/self.dx/self.dz
-#
-#
-#    def ddydz(self, x, y, z):
-#
-#        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-#        
-#        if not inside_box:
-#            return 0
-#
-#        b = self.construct_b(ix,iy,iz)
-#        coefs = np.matmul(tricubicMat, b)
-#        
-#        res=0
-#        for i in range(4):
-#            for j in range(1,4):
-#                for k in range(1,4):
-#                    res += j*k*coefs[i+4*j+16*k]*x1**i*y1**(j-1)*z1**(k-1)
-#        return res/self.dy/self.dz
-#
-#
-#    def ddxdydz(self, x, y, z):
-#
-#        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-#        
-#        if not inside_box:
-#            return 0
-#
-#        b = self.construct_b(ix,iy,iz)
-#        coefs = np.matmul(tricubicMat, b)
-#        
-#        res=0
-#        for i in range(1,4):
-#            for j in range(1,4):
-#                for k in range(1,4):
-#                    res += i*j*k*coefs[i+4*j+16*k]*x1**(i-1)*y1**(j-1)*z1**(k-1)
-#        return res/self.dx/self.dy/self.dz
-#
-#
-#    def ddx2(self, x, y, z):
-#
-#        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-#        
-#        if not inside_box:
-#            return 0
-#
-#        b = self.construct_b(ix,iy,iz)
-#        coefs = np.matmul(tricubicMat, b)
-#        
-#        res=0
-#        for i in range(2,4):
-#            for j in range(4):
-#                for k in range(4):
-#                    res += (i-1)*i*coefs[i+4*j+16*k]*x1**(i-2)*y1**j*z1**k
-#        return res/self.dx/self.dx
-#
-#
-#    def ddy2(self, x, y, z):
-#
-#        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-#        
-#        if not inside_box:
-#            return 0
-#
-#        b = self.construct_b(ix,iy,iz)
-#        coefs = np.matmul(tricubicMat, b)
-#
-#        res=0
-#        for i in range(4):
-#            for j in range(2,4):
-#                for k in range(4):
-#                    res += (j-1)*j*coefs[i+4*j+16*k]*x1**i*y1**(j-2)*z1**k
-#        return res/self.dy/self.dy
-#
-#
-#    def ddz2(self, x, y, z):
-#
-#        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
-#        
-#        if not inside_box:
-#            return 0
-#
-#        b = self.construct_b(ix,iy,iz)
-#        coefs = np.matmul(tricubicMat, b)
-#
-#        res=0
-#        for i in range(4):
-#            for j in range(4):
-#                for k in range(2,4):
-#                    res += (k-1)*k*coefs[i+4*j+16*k]*x1**i*y1**j*z1**(k-2)
-#        return res/self.dz/self.dz
+    def ddxdy(self, x, y, z):
+        return tricubic_get_ddxdy(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
+    def ddxdz(self, x, y, z):
+        return tricubic_get_ddxdz(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
+
+    def ddydz(self, x, y, z):
+        return tricubic_get_ddydz(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
+
+    def ddxdydz(self, x, y, z):
+        return tricubic_get_ddxdydz(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
