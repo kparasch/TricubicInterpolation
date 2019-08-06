@@ -70,34 +70,6 @@ class Tricubic_Interpolation(object):
     def is_inside_box(self, x, y, z):
         return tricubic_py_is_inside_box(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
-    def coords_to_indices_and_floats(self, x, y, z):
-        
-        fx = (x - self.x0)/self.dx
-        fy = (y - self.y0)/self.dy
-        fz = (z - self.z0)/self.dz
-
-        ix = int(fx)
-        iy = int(fy)
-        iz = int(fz)
-
-        x1 = fx - ix
-        y1 = fy - iy
-        z1 = fz - iz
-
-        inside_box = True
-        if   ix < self.ix_bound_low or ix > self.ix_bound_up:
-            inside_box = False
-        elif iy < self.iy_bound_low or iy > self.iy_bound_up:
-            inside_box = False
-        elif iz < self.iz_bound_low or iz > self.iz_bound_up:
-            inside_box = False
-
-        if not inside_box:
-            print('***WARNING: Coordinates outside bounding box.***')
-            #raise RuntimeWarning('Coordinates outside bounding box.\n\t    (x0,y0,z0) = (%f,%f,%f) \n\t input (x,y,z) = (%f,%f,%f) '%(self.x0,self.y0,self.z0,x,y,z))
-
-        return ix, iy, iz, x1, y1, z1, inside_box
-    
     def val(self, x, y, z):
         return tricubic_get_val(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
