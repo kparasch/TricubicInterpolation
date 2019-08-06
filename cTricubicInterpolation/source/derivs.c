@@ -71,7 +71,7 @@ double* finite_diff(int shape1, int shape2, double* A, int ix, int iy, int iz)
 
 
 
-    b[ 0] = p0
+    b[ 0] = p0;
     b[ 1] = p1;
     b[ 2] = p2;
     b[ 3] = p3;
