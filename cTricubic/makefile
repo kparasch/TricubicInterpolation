@@ -7,7 +7,7 @@ numpy3inc = `python3 -c "import numpy; print(numpy.get_include())"`
 python2inc = `python2 -c "from distutils import sysconfig; print(sysconfig.get_python_inc())"`
 numpy2inc = `python2 -c "import numpy; print(numpy.get_include())"`
 
-objects = $(objdir)/coefs.o $(objdir)/derivs.o $(objdir)/evaluate.o   
+objects = $(objdir)/coefs.o $(objdir)/derivs.o $(objdir)/evaluate.o $(objdir)/coords.o   
 
 cc = gcc
 cflags = -O3 -std=c99 -Wall -fPIC -I$(incdir) 
@@ -22,6 +22,9 @@ Tricubic_c.so: $(objects) $(objdir)/pywrap3.o
 
 Tricubic2_c.so: $(objects) $(objdir)/pywrap2.o
 	@$(cc) --shared -fPIC $(cflags) $^ -o $@ $(ldflags) 
+
+$(objdir)/coords.o: $(srcdir)/coords.c $(incdir)/coords.h 
+	@$(cc) -c $(cflags) $< -o $@ 
 
 $(objdir)/coefs.o: $(srcdir)/coefs.c $(incdir)/coefs.h 
 	@$(cc) -c $(cflags) $< -o $@ 

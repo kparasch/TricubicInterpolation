@@ -1,6 +1,6 @@
 #include "evaluate.h"
 
-void xyz_powers(double xn, double yn, double zn, double* xni, double* ynj, double* znk)
+void tricubic_xyz_powers(double xn, double yn, double zn, double* xni, double* ynj, double* znk)
 {
     xni[0] = 1.;
     ynj[0] = 1.;
@@ -16,7 +16,7 @@ void xyz_powers(double xn, double yn, double zn, double* xni, double* ynj, doubl
     return;
 }
 
-double eval(double* coefs, double* xn, double* yn, double* zn)
+double tricubic_eval(double* coefs, double* xn, double* yn, double* zn)
 {
     double result = 0.;
 
@@ -34,7 +34,7 @@ double eval(double* coefs, double* xn, double* yn, double* zn)
     return result;
 }
 
-double ddx(double* coefs, double* xn, double* yn, double* zn, double dx)
+double tricubic_ddx(double* coefs, double* xn, double* yn, double* zn, double dx)
 {
     double result = 0.;
     
@@ -56,7 +56,7 @@ double ddx(double* coefs, double* xn, double* yn, double* zn, double dx)
 }
 
 
-double ddy(double* coefs, double* xn, double* yn, double* zn, double dy)
+double tricubic_ddy(double* coefs, double* xn, double* yn, double* zn, double dy)
 {
     double result = 0.;
     
@@ -76,7 +76,7 @@ double ddy(double* coefs, double* xn, double* yn, double* zn, double dy)
     return result;
 }
 
-double ddz(double* coefs, double* xn, double* yn, double* zn, double dz)
+double tricubic_ddz(double* coefs, double* xn, double* yn, double* zn, double dz)
 {
     double result = 0.;
 
@@ -97,7 +97,7 @@ double ddz(double* coefs, double* xn, double* yn, double* zn, double dz)
 }
 
 
-double ddxdy(double* coefs, double* xn, double* yn, double* zn, double dx, double dy)
+double tricubic_ddxdy(double* coefs, double* xn, double* yn, double* zn, double dx, double dy)
 {
     double result = 0.;
     
@@ -117,7 +117,7 @@ double ddxdy(double* coefs, double* xn, double* yn, double* zn, double dx, doubl
     return result;
 }
 
-double ddxdz(double* coefs, double* xn, double* yn, double* zn, double dx, double dz)
+double tricubic_ddxdz(double* coefs, double* xn, double* yn, double* zn, double dx, double dz)
 {
     double result = 0.;
     
@@ -137,7 +137,7 @@ double ddxdz(double* coefs, double* xn, double* yn, double* zn, double dx, doubl
     return result;
 }
 
-double ddydz(double* coefs, double* xn, double* yn, double* zn, double dy, double dz)
+double tricubic_ddydz(double* coefs, double* xn, double* yn, double* zn, double dy, double dz)
 {
     double result = 0.;
     
@@ -157,7 +157,7 @@ double ddydz(double* coefs, double* xn, double* yn, double* zn, double dy, doubl
     return result;
 }
 
-double ddxdydz(double* coefs, double* xn, double* yn, double* zn, double dx, double dy, double dz)
+double tricubic_ddxdydz(double* coefs, double* xn, double* yn, double* zn, double dx, double dy, double dz)
 {
     double result = 0.;
     

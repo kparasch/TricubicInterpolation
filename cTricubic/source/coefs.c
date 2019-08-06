@@ -1,7 +1,7 @@
 #include "coefs.h"
 
 
-double* get_coefs(double* b)
+double* tricubic_get_coefs(double* b)
 {
     double tricubic_mat[64][64] = {                              
                                    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},

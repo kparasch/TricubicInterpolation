@@ -9,7 +9,9 @@
 #include "evaluate.h"
 #include "coefs.h"
 #include "derivs.h"
+#include "coords.h"
 
-static PyObject* get_val(PyObject* self, PyObject* args);
+static PyObject* tricubic_get_val(PyObject* self, PyObject* args);
+static PyObject* tricubic_get_ddx(PyObject* self, PyObject* args);
 
 #endif

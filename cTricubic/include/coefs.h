@@ -3,6 +3,6 @@
 
 #include <stdlib.h>
 
-double* get_coefs(double* b);
+double* tricubic_get_coefs(double* b);
 
 #endif

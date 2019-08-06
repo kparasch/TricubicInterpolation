@@ -1,6 +1,6 @@
 #include "derivs.h"
 
-double* finite_diff(int shape1, int shape2, double* A, int ix, int iy, int iz)
+double* tricubic_finite_diff(int shape1, int shape2, double* A, int ix, int iy, int iz)
 {
     double* b = (double*)malloc(64*sizeof(double));
 
@@ -146,7 +146,7 @@ double* finite_diff(int shape1, int shape2, double* A, int ix, int iy, int iz)
     return b;
 }
 
-double* exact_diff(int shape1, int shape2, int shape3, double *A, int ix, int iy, int iz, double dx, double dy, double dz)
+double* tricubic_exact_diff(int shape1, int shape2, int shape3, double *A, int ix, int iy, int iz, double dx, double dy, double dz)
 {
     double scale[8] = {1., dx, dy, dz, dx * dy, dx * dz, dy * dz, (dx * dy) * dz};
 
