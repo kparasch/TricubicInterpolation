@@ -52,11 +52,11 @@ class Tricubic_Interpolation(object):
         self.iy_bound_low = 1
         self.iz_bound_low = 1
 
-        if self.ix_bound_up <= self.ix_bound_low:
+        if self.ix_bound_up < self.ix_bound_low:
             raise Exception('Interpolating array is too small along the first dimension (after discards).')
-        if self.iy_bound_up <= self.iy_bound_low:
+        if self.iy_bound_up < self.iy_bound_low:
             raise Exception('Interpolating array is too small along the second dimension (after discards).')
-        if self.iz_bound_up <= self.iz_bound_low:
+        if self.iz_bound_up < self.iz_bound_low:
             raise Exception('Interpolating array is too small along the third dimension (after discards).')
 
     def construct_b(self, x, y, z):
