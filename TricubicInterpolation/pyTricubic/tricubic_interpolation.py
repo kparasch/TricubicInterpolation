@@ -20,17 +20,27 @@ class Tricubic_Interpolation(object):
             #print('Using exact derivatives.')
             if len(A.shape) != 4:
                 raise Exception('Input array should be 4-dimensional when using exact derivatives method. It\'s not.')
+            if discardx != 1 or discardy != 1 or discardz != 1:
+                raise Exception('Discards should be equal to 1 when using Exact derivatives method.')
             self.construct_b = self.exact_diff
+            self.A = A
+            
+            self.ix_bound_up = self.A.shape[0] - 2  #    a -1 because counting starts from 0,
+            self.iy_bound_up = self.A.shape[1] - 2  #    another -1 because one more point is needed for finite differences,
+            self.iz_bound_up = self.A.shape[2] - 2  #    and a last -1 because the bound corresponds to the bound 
+                                                    #    for the lower index inclusive
+    
+            self.ix_bound_low = 0
+            self.iy_bound_low = 0
+            self.iz_bound_low = 0
+    
         elif method=='FD':
             #print('Using finite difference approximation for derivatives.')
             if len(A.shape) != 3:
                 raise Exception('Input array should be 3-dimensional when using finite differences method. It\'s not.')
             self.construct_b = self.finite_diff
-        else:
-            raise ValueError('Invalid method: %s'%method)
 
-
-        self.A = A[:,:,:]
+        self.A = A
         if self.discardx > 1:
             self.A = self.A[self.discardx-1:-(self.discardx-1),:,:]
         if self.discardy > 1:
@@ -46,6 +56,10 @@ class Tricubic_Interpolation(object):
         self.ix_bound_low = 1
         self.iy_bound_low = 1
         self.iz_bound_low = 1
+
+        else:
+            raise ValueError('Invalid method: %s'%method)
+
 
         if self.ix_bound_up < self.ix_bound_low:
             raise Exception('Interpolating array is too small along the first dimension (after discards).')
