@@ -1,0 +1,1 @@
+include TricubicInterpolation/cTricubic/include/*.h
