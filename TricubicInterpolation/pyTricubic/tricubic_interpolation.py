@@ -40,22 +40,22 @@ class Tricubic_Interpolation(object):
                 raise Exception('Input array should be 3-dimensional when using finite differences method. It\'s not.')
             self.construct_b = self.finite_diff
 
-        self.A = A
-        if self.discardx > 1:
-            self.A = self.A[self.discardx-1:-(self.discardx-1),:,:]
-        if self.discardy > 1:
-            self.A = self.A[:,self.discardy-1:-(self.discardy-1),:]
-        if self.discardz > 1:
-            self.A = self.A[:,:,self.discardz-1:-(self.discardz-1)]
-        
-        self.ix_bound_up = self.A.shape[0] - 3  #    a -1 because counting starts from 0,
-        self.iy_bound_up = self.A.shape[1] - 3  #    another -1 because one more point is needed for finite differences,
-        self.iz_bound_up = self.A.shape[2] - 3  #    and a last -1 because the bound corresponds to the bound 
-                                                #    for the lower index inclusive
+            self.A = A
+            if self.discardx > 1:
+                self.A = self.A[self.discardx-1:-(self.discardx-1),:,:]
+            if self.discardy > 1:
+                self.A = self.A[:,self.discardy-1:-(self.discardy-1),:]
+            if self.discardz > 1:
+                self.A = self.A[:,:,self.discardz-1:-(self.discardz-1)]
+            
+            self.ix_bound_up = self.A.shape[0] - 3  #    a -1 because counting starts from 0,
+            self.iy_bound_up = self.A.shape[1] - 3  #    another -1 because one more point is needed for finite differences,
+            self.iz_bound_up = self.A.shape[2] - 3  #    and a last -1 because the bound corresponds to the bound 
+                                                    #    for the lower index inclusive
 
-        self.ix_bound_low = 1
-        self.iy_bound_low = 1
-        self.iz_bound_low = 1
+            self.ix_bound_low = 1
+            self.iy_bound_low = 1
+            self.iz_bound_low = 1
 
         else:
             raise ValueError('Invalid method: %s'%method)
