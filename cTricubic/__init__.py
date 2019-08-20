@@ -95,3 +95,6 @@ class Tricubic_Interpolation(object):
 
     def ddxdydz(self, x, y, z):
         return tricubic_get_ddxdydz(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
+
+    def kick(self, x, y, z):
+        return tricubic_get_kick(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
