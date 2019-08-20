@@ -166,6 +166,20 @@ static PyObject* tricubic_get_ddxdydz(PyObject* self, PyObject* args)
     return Py_BuildValue("d", val);
 }
 
+static PyObject* tricubic_get_kick(PyObject* self, PyObject* args)
+{
+    TRICUBIC_PROTOTYPE_GET_MACRO
+
+    double xkick = -tricubic_ddx(coefs, xni, ynj, znk, dx);
+    double ykick = -tricubic_ddy(coefs, xni, ynj, znk, dy);
+    double zkick = -tricubic_ddz(coefs, xni, ynj, znk, dz);
+
+    free(coefs);
+    free(b);
+
+    return Py_BuildValue("ddd", xkick, ykick, zkick);
+}
+
 static PyObject* tricubic_py_coords_to_indices(PyObject* self, PyObject* args)
 {
     TRICUBIC_PROTOTYPE_GET_MACRO
@@ -228,6 +242,7 @@ static PyMethodDef TricubicMethods[] =
     {"tricubic_get_ddxdz", tricubic_get_ddxdz, METH_VARARGS, "returns interpolated first derivative with respect to x and z"},
     {"tricubic_get_ddydz", tricubic_get_ddydz, METH_VARARGS, "returns interpolated first derivative with respect to y and z"},
     {"tricubic_get_ddxdydz", tricubic_get_ddxdydz, METH_VARARGS, "returns interpolated first derivative with respect to x, y and z"},
+    {"tricubic_get_kick", tricubic_get_ddxdydz, METH_VARARGS, "returns interpolated kicks"},
     {"tricubic_py_coords_to_indices", tricubic_py_coords_to_indices, METH_VARARGS, "returns indices."},
     {"tricubic_py_get_b", tricubic_py_get_b, METH_VARARGS, "returns b."},
     {"tricubic_py_get_coefs", tricubic_py_get_coefs, METH_VARARGS, "returns coefs."},
