@@ -1,6 +1,7 @@
 import sys
-sys.path.append('..')
-from tricubic_interpolation import Tricubic_Interpolation
+sys.path.append('../..')
+#from TricubicInterpolation.pyTricubic import Tricubic_Interpolation
+from TricubicInterpolation.cTricubic import Tricubic_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
@@ -43,9 +44,9 @@ dz = 0.3/2
 discard_x = 1
 discard_y = 5
 discard_z = 1
-Nx = 100*2
-Ny = 100*2
-Nz = 100*2
+Nx = 100
+Ny = 40
+Nz = 30
 
 
 if exact_derivatives:
@@ -157,4 +158,4 @@ ax12.plot(Z, lamdfdz(x_obs,y_obs, Z),'k')
 ax12.plot(Z, np.array([ip.ddz(x_obs,y_obs, i) for i in Z]),'r')
 ax12.set_xlabel('z')
 
-plt.show(False)
+plt.show()

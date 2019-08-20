@@ -1,5 +1,5 @@
 import numpy as np
-from tricubic_matrix import tricubicMat
+from .tricubic_matrix import tricubicMat
 
 
 class Tricubic_Interpolation(object):
@@ -47,11 +47,11 @@ class Tricubic_Interpolation(object):
         self.iy_bound_low = 1
         self.iz_bound_low = 1
 
-        if self.ix_bound_up <= self.ix_bound_low:
+        if self.ix_bound_up < self.ix_bound_low:
             raise Exception('Interpolating array is too small along the first dimension (after discards).')
-        if self.iy_bound_up <= self.iy_bound_low:
+        if self.iy_bound_up < self.iy_bound_low:
             raise Exception('Interpolating array is too small along the second dimension (after discards).')
-        if self.iz_bound_up <= self.iz_bound_low:
+        if self.iz_bound_up < self.iz_bound_low:
             raise Exception('Interpolating array is too small along the third dimension (after discards).')
 
         #if A.shape[0]- 2*self.discardx < 2:
@@ -373,6 +373,38 @@ class Tricubic_Interpolation(object):
                     res += i*j*k*coefs[i+4*j+16*k]*x1**(i-1)*y1**(j-1)*z1**(k-1)
         return res/self.dx/self.dy/self.dz
 
+    def kick(self, x, y, z):
+
+        ix, iy, iz, x1, y1, z1, inside_box = self.coords_to_indices_and_floats(x, y, z)
+        
+        if not inside_box:
+            return 0
+
+        b = self.construct_b(ix,iy,iz)
+        coefs = np.matmul(tricubicMat, b)
+        
+        xkick=0
+        for i in range(1,4):
+            for j in range(4):
+                for k in range(4):
+                    xkick += i*coefs[i+4*j+16*k]*x1**(i-1)*y1**j*z1**k
+        xkick = -xkick/self.dx
+
+        ykick=0
+        for i in range(4):
+            for j in range(1,4):
+                for k in range(4):
+                    ykick += j*coefs[i+4*j+16*k]*x1**i*y1**(j-1)*z1**k
+        ykick = -ykick/self.dy
+
+        zkick=0
+        for i in range(4):
+            for j in range(4):
+                for k in range(1,4):
+                    zkick += k*coefs[i+4*j+16*k]*x1**i*y1**j*z1**(k-1)
+        zkick = -zkick/self.dz
+
+        return xkick, ykick, zkick
 
     def ddx2(self, x, y, z):
 

@@ -1,6 +1,7 @@
 import sys
-sys.path.append('..')
-from tricubic_interpolation import Tricubic_Interpolation
+sys.path.append('../..')
+from TricubicInterpolation.pyTricubic import Tricubic_Interpolation
+#from TricubicInterpolation.cTricubic import Tricubic_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
@@ -51,4 +52,4 @@ ax1.plot(Y,[ip.val(x_obs, i, z_obs) for i in Y],'r')
 ax1.set_xlabel('y')
 ax1.set_ylabel('f')
 
-plt.show(False)
+plt.show()

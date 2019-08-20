@@ -1,13 +1,14 @@
 import sys
-sys.path.append('..')
+sys.path.append('../..')
 
-from tricubic_interpolation import Tricubic_Interpolation
+from TricubicInterpolation.pyTricubic import Tricubic_Interpolation
+from TricubicInterpolation.cTricubic import Tricubic_Interpolation as cTricubic_Interpolation
 import matplotlib.pyplot as plt
 import numpy as np
 import sympy
 #plt.style.use('kostas')
 
-def run_test():
+def run_test(interp='py'):
     x,y,z = sympy.symbols('x y z')
     upper_int = 9999
     #print('One random number: %d'%np.random.randint(upper_int))
@@ -71,8 +72,12 @@ def run_test():
     y_obs = 6.
     z_obs = 2.
     
-    ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
-    ip2 = Tricubic_Interpolation(B, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, 'Exact')
+    if interp == 'py':
+        ip = Tricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
+        ip2 = Tricubic_Interpolation(B, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, 'Exact')
+    elif interp == 'c':
+        ip = cTricubic_Interpolation(A, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z)
+        ip2 = cTricubic_Interpolation(B, x0, y0, z0, dx, dy, dz, discard_x, discard_y, discard_z, 'Exact')
     
     passed = True
     for i in range(100):
@@ -87,8 +92,19 @@ def run_test():
 
 n_tests = 3
 passed_flag = True
+print('Testing python interpolator...')
 for i in range(n_tests):
-    test_result = run_test()
+    test_result = run_test(interp='py')
+    passed_flag = passed_flag and test_result
+    if test_result:
+        passfail = 'passed.'
+    else:
+        passfail = 'failed.'
+    print('Random test %d/%d has '%(i,n_tests)+ passfail) 
+
+print('Testing C interpolator...')
+for i in range(n_tests):
+    test_result = run_test(interp='py')
     passed_flag = passed_flag and test_result
     if test_result:
         passfail = 'passed.'
