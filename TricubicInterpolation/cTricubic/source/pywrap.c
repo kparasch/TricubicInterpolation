@@ -242,7 +242,7 @@ static PyMethodDef TricubicMethods[] =
     {"tricubic_get_ddxdz", tricubic_get_ddxdz, METH_VARARGS, "returns interpolated first derivative with respect to x and z"},
     {"tricubic_get_ddydz", tricubic_get_ddydz, METH_VARARGS, "returns interpolated first derivative with respect to y and z"},
     {"tricubic_get_ddxdydz", tricubic_get_ddxdydz, METH_VARARGS, "returns interpolated first derivative with respect to x, y and z"},
-    {"tricubic_get_kick", tricubic_get_ddxdydz, METH_VARARGS, "returns interpolated kicks"},
+    {"tricubic_get_kick", tricubic_get_kick, METH_VARARGS, "returns interpolated kicks"},
     {"tricubic_py_coords_to_indices", tricubic_py_coords_to_indices, METH_VARARGS, "returns indices."},
     {"tricubic_py_get_b", tricubic_py_get_b, METH_VARARGS, "returns b."},
     {"tricubic_py_get_coefs", tricubic_py_get_coefs, METH_VARARGS, "returns coefs."},
