@@ -14,29 +14,14 @@ class Trilinear_Interpolation:
         self.y0 = y0 + (discardy-1)*dx
         self.z0 = z0 + (discardz-1)*dx
 
-        if A.shape[0]- 2*self.discard0 < 2:
+        if A.shape[0]- 2*self.discardx < 2:
             raise Exception('n0 < 2: Interpolating array is too small along the first dimension (after discards).')
-        if A.shape[1]- 2*self.discard1 < 2:
+        if A.shape[1]- 2*self.discardy < 2:
             raise Exception('n1 < 2: Interpolating array is too small along the second dimension (after discards).')
-        if A.shape[2]- 2*self.discard2 < 2:
+        if A.shape[2]- 2*self.discardz < 2:
             raise Exception('n2 < 2: Interpolating array is too small along the third dimension (after discards).')
 
-        self.v = self.finite_differences(A, self.discard0, self.discard1, self.discard2)
-
-    def set_origin(self, x0, y0, z0):
-        self.x0 = x0
-        self.y0 = y0
-        self.z0 = z0
-
-    def set_steps(self, dx, dy, dz):
-        self.dx = dx
-        self.dy = dy
-        self.dz = dz
-
-    def discard_points(self, discard0, discard1, discard2):
-        self.discard0 = discard0
-        self.discard1 = discard1
-        self.discard2 = discard2
+        self.v = self.finite_differences(A, self.discardx, self.discardy, self.discardz)
 
     def finite_differences(self, A, d0, d1, d2):
         n0 = A.shape[0] - 2 * d0
