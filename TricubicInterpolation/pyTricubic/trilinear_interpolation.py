@@ -1,23 +1,19 @@
 import numpy as np
 
 class Trilinear_Interpolation:
-    def __init__(self):
-        self.discard0 = 1
-        self.discard1 = 1
-        self.discard2 = 1
-        
-        self.x0 = 0. 
-        self.y0 = 0. 
-        self.z0 = 0.
+    def __init__(self, A, x0=0., y0=0., z0=0., dx=1., dy=1., dz=1., discardx=1, discardy=1, discardz=1, method='FD'):
+        self.discardx = discardx
+        self.discardy = discardy
+        self.discardz = discardz
 
-        self.dx = 1.
-        self.dy = 1.
-        self.dz = 1.
+        self.dx = dx
+        self.dy = dy
+        self.dz = dz
 
-    def initialize(self, A):
-        self.x0 += (self.discard0-1)*self.dx
-        self.y0 += (self.discard1-1)*self.dy
-        self.z0 += (self.discard2-1)*self.dz
+        self.x0 = x0 + (discardx-1)*dx
+        self.y0 = y0 + (discardy-1)*dx
+        self.z0 = z0 + (discardz-1)*dx
+
         if A.shape[0]- 2*self.discard0 < 2:
             raise Exception('n0 < 2: Interpolating array is too small along the first dimension (after discards).')
         if A.shape[1]- 2*self.discard1 < 2:
