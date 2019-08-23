@@ -166,6 +166,42 @@ static PyObject* tricubic_get_ddxdydz(PyObject* self, PyObject* args)
     return Py_BuildValue("d", val);
 }
 
+static PyObject* tricubic_get_ddx2(PyObject* self, PyObject* args)
+{
+    TRICUBIC_PROTOTYPE_GET_MACRO
+
+    double val = tricubic_ddx2(coefs, xni, ynj, znk, dx);
+
+    free(coefs);
+    free(b);
+
+    return Py_BuildValue("d", val);
+}
+
+static PyObject* tricubic_get_ddy2(PyObject* self, PyObject* args)
+{
+    TRICUBIC_PROTOTYPE_GET_MACRO
+
+    double val = tricubic_ddy2(coefs, xni, ynj, znk, dy);
+
+    free(coefs);
+    free(b);
+
+    return Py_BuildValue("d", val);
+}
+
+static PyObject* tricubic_get_ddz2(PyObject* self, PyObject* args)
+{
+    TRICUBIC_PROTOTYPE_GET_MACRO
+
+    double val = tricubic_ddz2(coefs, xni, ynj, znk, dz);
+
+    free(coefs);
+    free(b);
+
+    return Py_BuildValue("d", val);
+}
+
 static PyObject* tricubic_get_kick(PyObject* self, PyObject* args)
 {
     TRICUBIC_PROTOTYPE_GET_MACRO
@@ -242,6 +278,9 @@ static PyMethodDef TricubicMethods[] =
     {"tricubic_get_ddxdz", tricubic_get_ddxdz, METH_VARARGS, "returns interpolated first derivative with respect to x and z"},
     {"tricubic_get_ddydz", tricubic_get_ddydz, METH_VARARGS, "returns interpolated first derivative with respect to y and z"},
     {"tricubic_get_ddxdydz", tricubic_get_ddxdydz, METH_VARARGS, "returns interpolated first derivative with respect to x, y and z"},
+    {"tricubic_get_ddx2", tricubic_get_ddx2, METH_VARARGS, "returns interpolated second derivative with respect to x"},
+    {"tricubic_get_ddy2", tricubic_get_ddy2, METH_VARARGS, "returns interpolated second derivative with respect to y"},
+    {"tricubic_get_ddz2", tricubic_get_ddz2, METH_VARARGS, "returns interpolated second derivative with respect to z"},
     {"tricubic_get_kick", tricubic_get_kick, METH_VARARGS, "returns interpolated kicks"},
     {"tricubic_py_coords_to_indices", tricubic_py_coords_to_indices, METH_VARARGS, "returns indices."},
     {"tricubic_py_get_b", tricubic_py_get_b, METH_VARARGS, "returns b."},

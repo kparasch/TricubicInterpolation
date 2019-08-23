@@ -10,5 +10,8 @@ double tricubic_ddxdy(double* coefs, double* xn, double* yn, double* zn, double 
 double tricubic_ddxdz(double* coefs, double* xn, double* yn, double* zn, double dx, double dz);
 double tricubic_ddydz(double* coefs, double* xn, double* yn, double* zn, double dy, double dz);
 double tricubic_ddxdydz(double* coefs, double* xn, double* yn, double* zn, double dx, double dy, double dz);
+double tricubic_ddx2(double* coefs, double* xn, double* yn, double* zn, double dx);
+double tricubic_ddy2(double* coefs, double* xn, double* yn, double* zn, double dy);
+double tricubic_ddz2(double* coefs, double* xn, double* yn, double* zn, double dz);
 
 #endif

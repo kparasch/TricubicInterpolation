@@ -176,3 +176,65 @@ double tricubic_ddxdydz(double* coefs, double* xn, double* yn, double* zn, doubl
 
     return result;
 }
+
+double tricubic_ddx2(double* coefs, double* xn, double* yn, double* zn, double dx)
+{
+    double result = 0.;
+    
+
+    for(int i = 2; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            for(int k = 0; k < 4; k++)
+            {
+                result += ( i * (i - 1) ) * ( ( (coefs[i + 4 * j + 16 * k] * xn[i-2]) * yn[j]) * zn[k]);
+            }
+        }
+    }
+    
+    result /= dx*dx;
+
+    return result;
+}
+
+double tricubic_ddy2(double* coefs, double* xn, double* yn, double* zn, double dy)
+{
+    double result = 0.;
+    
+    for(int i = 0; i < 4; i++)
+    {
+        for(int j = 2; j < 4; j++)
+        {
+            for(int k = 0; k < 4; k++)
+            {
+                result += ( j * (j - 1) ) * ( ( (coefs[i + 4 * j + 16 * k] * xn[i]) * yn[j-2]) * zn[k]);
+            }
+        }
+    }
+
+    result /= dy*dy;
+
+    return result;
+}
+
+double tricubic_ddz2(double* coefs, double* xn, double* yn, double* zn, double dz)
+{
+    double result = 0.;
+
+    for(int i = 0; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            for(int k = 2; k < 4; k++)
+            {
+                result += ( k * (k - 1) ) * ( ( (coefs[i + 4 * j + 16 * k] * xn[i]) * yn[j]) * zn[k-2]);
+            }
+        }
+    }
+
+    result /= dz*dz;
+
+    return result;
+}
+
