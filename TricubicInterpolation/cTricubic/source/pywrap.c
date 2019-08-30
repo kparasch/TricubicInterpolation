@@ -333,6 +333,50 @@ static PyObject* tricubic_py_get_coefs(PyObject* self, PyObject* args)
     return Py_BuildValue("N", coefs_numpy);
 }
 
+static PyObject* tricubic_py_is_inside_box(PyObject* self, PyObject* args)
+{
+    double dx, dy, dz;                                                         
+    double x, y, z;                                                            
+    double x0, y0, z0;                                                         
+                                                                               
+    int ix_bound_low, ix_bound_up;                                             
+    int iy_bound_low, iy_bound_up;                                             
+    int iz_bound_low, iz_bound_up;                                             
+                                                                               
+    int method;                                                                
+    PyArrayObject *py_A = NULL;                                                
+    if(!PyArg_ParseTuple(args, "Odddddddddiiiiiii", &py_A, &x,                 
+                         &y, &z, &x0, &y0, &z0, &dx, &dy, &dz, &ix_bound_low,  
+                         &ix_bound_up, &iy_bound_low, &iy_bound_up,            
+                         &iz_bound_low, &iz_bound_up, &method                  
+                        )                                                      
+      )                                                                        
+        return NULL;                                                           
+                                                                               
+    if(py_A == NULL)                                                           
+        return NULL;                                                           
+                                                                               
+    double* c_A = (double*)PyArray_DATA((PyArrayObject*)py_A);                 
+                                                                               
+    npy_intp* shape = PyArray_DIMS((PyArrayObject*)py_A);                      
+    int shape1 = (int)shape[1];                                                
+    int shape2 = (int)shape[2];                                                
+                                                                               
+    int ix, iy, iz;                                                            
+    double xn, yn, zn;                                                         
+    int is_inside = tricubic_coords_to_indices_and_floats(x, y, z, x0, y0, z0, 
+                                                          dx, dy, dz, &ix, &iy,
+                                                          &iz, &xn, &yn, &zn,  
+                                                          ix_bound_low,        
+                                                          ix_bound_up,         
+                                                          iy_bound_low,        
+                                                          iy_bound_up,         
+                                                          iz_bound_low,        
+                                                          iz_bound_up          
+                                                         );                    
+                                                                               
+    return Py_BuildValue("i", is_inside);
+}
 
 static PyMethodDef TricubicMethods[] = 
 {
@@ -351,6 +395,7 @@ static PyMethodDef TricubicMethods[] =
     {"tricubic_py_coords_to_indices", tricubic_py_coords_to_indices, METH_VARARGS, "returns indices."},
     {"tricubic_py_get_b", tricubic_py_get_b, METH_VARARGS, "returns b."},
     {"tricubic_py_get_coefs", tricubic_py_get_coefs, METH_VARARGS, "returns coefs."},
+    {"tricubic_py_is_inside_box", tricubic_py_is_inside_box, METH_VARARGS, "returns if position is inside bounding box."},
     {NULL, NULL, 0, NULL}
 };
 
