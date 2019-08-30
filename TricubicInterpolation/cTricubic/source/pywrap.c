@@ -204,7 +204,73 @@ static PyObject* tricubic_get_ddz2(PyObject* self, PyObject* args)
 
 static PyObject* tricubic_get_kick(PyObject* self, PyObject* args)
 {
-    TRICUBIC_PROTOTYPE_GET_MACRO
+    double dx, dy, dz;                                                         
+    double x, y, z;                                                            
+    double x0, y0, z0;                                                         
+                                                                               
+    int ix_bound_low, ix_bound_up;                                             
+    int iy_bound_low, iy_bound_up;                                             
+    int iz_bound_low, iz_bound_up;                                             
+                                                                               
+    int method;                                                                
+    PyArrayObject *py_A = NULL;                                                
+    if(!PyArg_ParseTuple(args, "Odddddddddiiiiiii", &py_A, &x,                 
+                         &y, &z, &x0, &y0, &z0, &dx, &dy, &dz, &ix_bound_low,  
+                         &ix_bound_up, &iy_bound_low, &iy_bound_up,            
+                         &iz_bound_low, &iz_bound_up, &method                  
+                        )                                                      
+      )                                                                        
+        return NULL;                                                           
+                                                                               
+    if(py_A == NULL)                                                           
+        return NULL;                                                           
+                                                                               
+    double* c_A = (double*)PyArray_DATA((PyArrayObject*)py_A);                 
+                                                                               
+    npy_intp* shape = PyArray_DIMS((PyArrayObject*)py_A);                      
+    int shape1 = (int)shape[1];                                                
+    int shape2 = (int)shape[2];                                                
+                                                                               
+    int ix, iy, iz;                                                            
+    double xn, yn, zn;                                                         
+    int is_inside = tricubic_coords_to_indices_and_floats(x, y, z, x0, y0, z0, 
+                                                          dx, dy, dz, &ix, &iy,
+                                                          &iz, &xn, &yn, &zn,  
+                                                          ix_bound_low,        
+                                                          ix_bound_up,         
+                                                          iy_bound_low,        
+                                                          iy_bound_up,         
+                                                          iz_bound_low,        
+                                                          iz_bound_up          
+                                                         );                    
+                                                                               
+    if(!is_inside)                                                             
+    {                                                                          
+        printf("***WARNING: Coordinates outside bounding box.***\n");          
+        return Py_BuildValue("ddd", 0., 0., 0.);                               
+    }                                                                          
+                                                                               
+    double* b = NULL;                                                          
+    if(method == 1)                                                            
+        b = tricubic_finite_diff(shape1, shape2, c_A, ix, iy, iz);             
+    else if(method == 2)                                                       
+    {                                                                          
+        int shape3 = (int)shape[3];                                            
+        b = tricubic_exact_diff(shape1, shape2, shape3, c_A, ix, iy, iz, dx,   
+                                dy, dz                                         
+                               );                                              
+    }                                                                          
+    else                                                                       
+    {                                                                          
+        printf("Method not recognized");                                       
+        Py_INCREF(Py_None);                                                    
+        return NULL;                                                           
+    }                                                                          
+                                                                               
+    double* coefs = tricubic_get_coefs(b);                                     
+                                                                               
+    double xni[4], ynj[4], znk[4];                                             
+    tricubic_xyz_powers(xn, yn, zn, xni, ynj, znk);                            
 
     double xkick = -tricubic_ddx(coefs, xni, ynj, znk, dx);
     double ykick = -tricubic_ddy(coefs, xni, ynj, znk, dy);
