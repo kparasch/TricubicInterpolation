@@ -72,8 +72,8 @@ class Tricubic_Interpolation(object):
         if self.iz_bound_up < self.iz_bound_low:
             raise Exception('Interpolating array is too small along the third dimension (after discards).')
 
-    def construct_b(self, x, y, z):
-        return tricubic_py_get_b(self.A, x, y, z, self.x0, self.y0, self.z0, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
+    def construct_b(self, ix, iy, iz):
+        return tricubic_py_get_b(self.A, ix, iy, iz, self.dx, self.dy, self.dz, self.ix_bound_low, self.ix_bound_up, self.iy_bound_low, self.iy_bound_up, self.iz_bound_low, self.iz_bound_up, self.imethod)
 
     def get_coefs(self, b):
         return tricubic_py_get_coefs(b)
