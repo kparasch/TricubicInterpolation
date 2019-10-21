@@ -16,7 +16,7 @@ class Tricubic_Interpolation(object):
         self.y0 = y0 + (discardy-1)*dx
         self.z0 = z0 + (discardz-1)*dx
 
-        self.symmetrize2 = False
+        self.mirror2 = False
 
         if method=='Exact':
             #print('Using exact derivatives.')
@@ -59,14 +59,14 @@ class Tricubic_Interpolation(object):
             self.iy_bound_low = 1
             self.iz_bound_low = 1
 
-        elif method=='Exact-Symmetric2':
+        elif method=='Exact-Mirror2':
             #print('Using exact derivatives.')
             if len(A.shape) != 4:
                 raise Exception('Input array should be 4-dimensional when using exact derivatives method. It\'s not.')
             if discardx != 1 or discardy != 1 or discardz != 1:
                 raise Exception('Discards should be equal to 1 when using Exact derivatives method.')
             self.construct_b = self.exact_diff
-            self.symmetrize2 = True
+            self.mirror2 = True
             self.A = A
             
             self.ix_bound_up = self.A.shape[0] - 2  #    a -1 because counting starts from 0,
@@ -202,7 +202,7 @@ class Tricubic_Interpolation(object):
         
         sx = 1
         sy = 1
-        if self.symmetrize2:
+        if self.mirror2:
             if x < 0:
                 sx = -1
             if y < 0:
@@ -223,7 +223,7 @@ class Tricubic_Interpolation(object):
         
         sx = 1
         sy = 1
-        if self.symmetrize2:
+        if self.mirror2:
             if x < 0:
                 sx = -1
             if y < 0:
@@ -255,7 +255,7 @@ class Tricubic_Interpolation(object):
         
         sx = 1
         sy = 1
-        if self.symmetrize2:
+        if self.mirror2:
             if x < 0:
                 sx = -1
             if y < 0:
