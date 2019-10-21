@@ -29,9 +29,21 @@
     int shape1 = (int)shape[1];                                                \
     int shape2 = (int)shape[2];                                                \
                                                                                \
+    int sx = 1;                                                                \
+    int sy = 1;                                                                \
+                                                                               \
+    if(method == 3)                                                            \
+    {                                                                          \
+        if(x < 0)                                                              \
+            sx = -1;                                                           \
+        if(y < 0)                                                              \
+            sy = -1;                                                           \
+    }                                                                          \
+                                                                               \
     int ix, iy, iz;                                                            \
     double xn, yn, zn;                                                         \
-    int is_inside = tricubic_coords_to_indices_and_floats(x, y, z, x0, y0, z0, \
+    int is_inside = tricubic_coords_to_indices_and_floats(sx*x, sy*y, z,       \
+                                                          x0, y0, z0,          \
                                                           dx, dy, dz, &ix, &iy,\
                                                           &iz, &xn, &yn, &zn,  \
                                                           ix_bound_low,        \
@@ -51,7 +63,7 @@
     double* b = NULL;                                                          \
     if(method == 1)                                                            \
         b = tricubic_finite_diff(shape1, shape2, c_A, ix, iy, iz);             \
-    else if(method == 2)                                                       \
+    else if(method == 2 || method == 3)                                                       \
     {                                                                          \
         int shape3 = (int)shape[3];                                            \
         b = tricubic_exact_diff(shape1, shape2, shape3, c_A, ix, iy, iz, dx,   \
@@ -86,7 +98,7 @@ static PyObject* tricubic_get_ddx(PyObject* self, PyObject* args)
 {
     TRICUBIC_PROTOTYPE_GET_MACRO
 
-    double val = tricubic_ddx(coefs, xni, ynj, znk, dx);
+    double val = sx*tricubic_ddx(coefs, xni, ynj, znk, dx);
 
     free(coefs);
     free(b);
@@ -98,7 +110,7 @@ static PyObject* tricubic_get_ddy(PyObject* self, PyObject* args)
 {
     TRICUBIC_PROTOTYPE_GET_MACRO
 
-    double val = tricubic_ddy(coefs, xni, ynj, znk, dy);
+    double val = sy*tricubic_ddy(coefs, xni, ynj, znk, dy);
 
     free(coefs);
     free(b);
@@ -122,7 +134,7 @@ static PyObject* tricubic_get_ddxdy(PyObject* self, PyObject* args)
 {
     TRICUBIC_PROTOTYPE_GET_MACRO
 
-    double val = tricubic_ddxdy(coefs, xni, ynj, znk, dx, dy);
+    double val = (sx*sy)*tricubic_ddxdy(coefs, xni, ynj, znk, dx, dy);
 
     free(coefs);
     free(b);
@@ -134,7 +146,7 @@ static PyObject* tricubic_get_ddxdz(PyObject* self, PyObject* args)
 {
     TRICUBIC_PROTOTYPE_GET_MACRO
 
-    double val = tricubic_ddxdz(coefs, xni, ynj, znk, dx, dz);
+    double val = sx*tricubic_ddxdz(coefs, xni, ynj, znk, dx, dz);
 
     free(coefs);
     free(b);
@@ -146,7 +158,7 @@ static PyObject* tricubic_get_ddydz(PyObject* self, PyObject* args)
 {
     TRICUBIC_PROTOTYPE_GET_MACRO
 
-    double val = tricubic_ddydz(coefs, xni, ynj, znk, dy, dz);
+    double val = sy*tricubic_ddydz(coefs, xni, ynj, znk, dy, dz);
 
     free(coefs);
     free(b);
@@ -158,7 +170,7 @@ static PyObject* tricubic_get_ddxdydz(PyObject* self, PyObject* args)
 {
     TRICUBIC_PROTOTYPE_GET_MACRO
 
-    double val = tricubic_ddxdydz(coefs, xni, ynj, znk, dx, dy, dz);
+    double val = (sx*sy)*tricubic_ddxdydz(coefs, xni, ynj, znk, dx, dy, dz);
 
     free(coefs);
     free(b);
@@ -231,9 +243,21 @@ static PyObject* tricubic_get_kick(PyObject* self, PyObject* args)
     int shape1 = (int)shape[1];                                                
     int shape2 = (int)shape[2];                                                
                                                                                
+    int sx = 1;                                                                
+    int sy = 1;                                                                
+                                                                               
+    if(method == 3)                                                            
+    {                                                                          
+        if(x < 0)                                                              
+            sx = -1;                                                           
+        if(y < 0)                                                              
+            sy = -1;                                                           
+    }                                                                          
+                                                                               
     int ix, iy, iz;                                                            
     double xn, yn, zn;                                                         
-    int is_inside = tricubic_coords_to_indices_and_floats(x, y, z, x0, y0, z0, 
+    int is_inside = tricubic_coords_to_indices_and_floats(sx*x, sy*y, z,       
+                                                          x0, y0, z0, 
                                                           dx, dy, dz, &ix, &iy,
                                                           &iz, &xn, &yn, &zn,  
                                                           ix_bound_low,        
@@ -253,7 +277,7 @@ static PyObject* tricubic_get_kick(PyObject* self, PyObject* args)
     double* b = NULL;                                                          
     if(method == 1)                                                            
         b = tricubic_finite_diff(shape1, shape2, c_A, ix, iy, iz);             
-    else if(method == 2)                                                       
+    else if(method == 2 || method == 3)                                                       
     {                                                                          
         int shape3 = (int)shape[3];                                            
         b = tricubic_exact_diff(shape1, shape2, shape3, c_A, ix, iy, iz, dx,   
@@ -272,8 +296,8 @@ static PyObject* tricubic_get_kick(PyObject* self, PyObject* args)
     double xni[4], ynj[4], znk[4];                                             
     tricubic_xyz_powers(xn, yn, zn, xni, ynj, znk);                            
 
-    double xkick = -tricubic_ddx(coefs, xni, ynj, znk, dx);
-    double ykick = -tricubic_ddy(coefs, xni, ynj, znk, dy);
+    double xkick = -sx*tricubic_ddx(coefs, xni, ynj, znk, dx);
+    double ykick = -sy*tricubic_ddy(coefs, xni, ynj, znk, dy);
     double zkick = -tricubic_ddz(coefs, xni, ynj, znk, dz);
 
     free(coefs);
