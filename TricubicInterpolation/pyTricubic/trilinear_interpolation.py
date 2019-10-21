@@ -101,5 +101,69 @@ class Trilinear_Interpolation:
 
     def ddz(self, x, y, z):
         return self.interp(x,y,z,3)
+    
+    def coefs(self, x,y,z, k):
+        fx = (x - self.x0)/self.dx
+        fy = (y - self.y0)/self.dy
+        fz = (z - self.z0)/self.dz
 
+        ix = int(fx)
+        iy = int(fy)
+        iz = int(fz)
+        
+        if ix < 1 or ix > self.v.shape[0]-1:
+            raise Exception('Position is outside bounding box (first dimension)', ix)
+
+        if iy < 1 or iy > self.v.shape[1]-1:
+            raise Exception('Position is outside bounding box (second dimension)', iy)
+
+        if iz < 1 or iz > self.v.shape[2]-1:
+            raise Exception('Position is outside bounding box (third dimension)', iz)
+
+        x1 = fx - ix
+        y1 = fy - iy
+        z1 = fz - iz
+
+        x2 = 1-x1
+        y2 = 1-y1
+        z2 = 1-z1
+
+        ix -= 1
+        iy -= 1
+        iz -= 1
+        
+        cc = np.array([8])
+        cc[0] = self.v[ix  ,iy  ,iz  ,k]
+        cc[1] = self.v[ix+1,iy  ,iz  ,k]
+        cc[2] = self.v[ix  ,iy+1,iz  ,k]
+        cc[3] = self.v[ix+1,iy+1,iz  ,k]
+        cc[4] = self.v[ix  ,iy  ,iz+1,k]
+        cc[5] = self.v[ix+1,iy  ,iz+1,k]
+        cc[6] = self.v[ix  ,iy+1,iz+1,k]
+        cc[7] = self.v[ix+1,iy+1,iz+1,k]
+
+        trilinear_mat = np.array([[ 1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
+                                  [-1.,  1.,  0.,  0.,  0.,  0.,  0.,  0.],
+                                  [-1.,  0.,  1.,  0.,  0.,  0.,  0.,  0.],
+                                  [-1.,  0.,  0.,  0.,  1.,  0.,  0.,  0.],
+                                  [ 1., -1., -1.,  1.,  0.,  0.,  0.,  0.],
+                                  [ 1., -1.,  0.,  0., -1.,  1.,  0.,  0.],
+                                  [ 1.,  0., -1.,  0., -1.,  0.,  1.,  0.],
+                                  [-1.,  1.,  1., -1.,  1., -1., -1.,  1.]])
+        coefs = np.matmul(trilinear_mat, cc)
+        
+
+        c = 0
+        for i in range(2):
+            for j in range(2):
+                for k in range(2):
+                    c += coefs[i+2*j+4*k]*(x**i*(y**j*z**k))
+        #c00=self.v[ix,iy,iz,k]*x2     + self.v[ix+1,iy,iz,k]*x1
+        #c01=self.v[ix,iy,iz+1,k]*x2   + self.v[ix+1,iy,iz+1,k]*x1
+        #c10=self.v[ix,iy+1,iz,k]*x2   + self.v[ix+1,iy+1,iz,k]*x1
+        #c11=self.v[ix,iy+1,iz+1,k]*x2 + self.v[ix+1,iy+1,iz+1,k]*x1
+        #c0 = c00*y2 + c10*y1
+        #c1 = c01*y2 + c11*y1
+        #c = c0*z2+c1*z1
+        return c
 
