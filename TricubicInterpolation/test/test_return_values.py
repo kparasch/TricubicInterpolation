@@ -119,7 +119,7 @@ for i in range(n_tests):
 
 print('Testing C interpolator...')
 for i in range(n_tests):
-    test_result = run_test(debug=debug)
+    test_result = run_test(debug=debug,interp='c')
     passed_flag = passed_flag and test_result
     if test_result:
         passfail = 'passed.'
