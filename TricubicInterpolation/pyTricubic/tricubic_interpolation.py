@@ -473,3 +473,64 @@ class Tricubic_Interpolation(object):
                     res += (k-1)*k*coefs[i+4*j+16*k]*x1**i*y1**j*z1**(k-2)
         return res/self.dz/self.dz
 
+    def diff_ddx2(self, ix, iy, iz):
+
+        inside_box = True
+        if ix-1 < self.ix_bound_low or ix > self.ix_bound_up:
+            inside_box = False
+        elif iy < self.iy_bound_low or iy > self.iy_bound_up:
+            inside_box = False
+        elif iz < self.iz_bound_low or iz > self.iz_bound_up:
+            inside_box = False
+
+        if not inside_box:
+            print('***WARNING: Coordinates outside bounding box.***')
+            return 0
+
+        b_right = self.construct_b(ix,iy,iz)
+        coefs_right = np.matmul(tricubicMat, b_right)
+        
+        right_on_grid=0
+        j=0
+        k=0
+        x1=0
+        y1=0
+        z1=0
+        for i in range(2,4):
+            right_on_grid += (i-1)*i*coefs_right[i+4*j+16*k]*x1**(i-2)*y1**j*z1**k
+
+        right_off_grid=0
+        x1=0
+        y1=0.5
+        z1=0.5
+        for i in range(2,4):
+            for j in range(4):
+                for k in range(4):
+                    right_off_grid += (i-1)*i*coefs_right[i+4*j+16*k]*x1**(i-2)*y1**j*z1**k
+
+        b_left = self.construct_b(ix-1,iy,iz)
+        coefs_left = np.matmul(tricubicMat, b_left)
+        
+        left_on_grid=0
+        j=0
+        k=0
+        x1=1
+        y1=0
+        z1=0
+        for i in range(2,4):
+            left_on_grid += (i-1)*i*coefs_left[i+4*j+16*k]*x1**(i-2)*y1**j*z1**k
+
+        left_off_grid=0
+        x1=1
+        y1=0.5
+        z1=0.5
+        for i in range(2,4):
+            for j in range(4):
+                for k in range(4):
+                    left_off_grid += (i-1)*i*coefs_left[i+4*j+16*k]*x1**(i-2)*y1**j*z1**k
+
+
+        diff_on_grid = abs(right_on_grid - left_on_grid)/self.dx**2.
+        diff_off_grid = abs(right_off_grid - left_off_grid)/self.dx**2.
+        return diff_on_grid, diff_off_grid
+
