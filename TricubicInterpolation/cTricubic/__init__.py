@@ -60,6 +60,24 @@ class Tricubic_Interpolation(object):
             self.ix_bound_low = 1
             self.iy_bound_low = 1
             self.iz_bound_low = 1
+        elif method=='Exact-Mirror2':
+            #print('Using exact derivatives.')
+            if len(A.shape) != 4:
+                raise Exception('Input array should be 4-dimensional when using Exact-Mirror2 method. It\'s not.')
+            if discardx != 1 or discardy != 1 or discardz != 1:
+                raise Exception('Discards should be equal to 1 when using Exact-Mirror2 method.')
+            self.imethod = 3
+            self.A = A
+            self.A = np.ascontiguousarray(self.A)
+            
+            self.ix_bound_up = self.A.shape[0] - 2  #    a -1 because counting starts from 0,
+            self.iy_bound_up = self.A.shape[1] - 2  #    
+            self.iz_bound_up = self.A.shape[2] - 2  #    and a last -1 because the bound corresponds to the bound 
+                                                    #    for the lower index inclusive
+
+            self.ix_bound_low = 0
+            self.iy_bound_low = 0
+            self.iz_bound_low = 0
         else:
             raise ValueError('Invalid method: %s'%method)
 
