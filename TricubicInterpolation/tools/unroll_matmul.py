@@ -35,19 +35,18 @@ ff.write('    const double tri_consts[%d] = '%len(sp_list))
 ff.write(c_tri_list)
 ff.write(';\n')
 
+flags = np.ones([nx])
 ss = ' '
-for i in range(nx):
-#for i in range(1):
-    flag = True
-    for j in range(ny):
+for j in range(ny):
+    for i in range(nx):
         cc = tricubicMat[i,j]
         
         if cc == 0:
             continue
 
-        if flag:
+        if flags[i]:
             ss = ' '
-            ff.write('    ')
+#            ff.write('    ')
         else:
             ss = '+'
         
@@ -55,32 +54,32 @@ for i in range(nx):
 #            print('coefs[%d] %s= b[%d]; '%(i,ss,j),end='')
             if ss == ' ':
                 if cc == 1:
-                    ff.write('coefs[%d] = b[%d]; '%(i,j))
+                    ff.write('    coefs[%d] = b[%d];\n'%(i,j))
                 else:
-                    ff.write('coefs[%d] = -b[%d]; '%(i,j))
+                    ff.write('    coefs[%d] = -b[%d];\n'%(i,j))
             else:
                 if cc == 1:
                     ss = '+'
                 else:
                     ss = '-'
-                ff.write('coefs[%d] %s= b[%d]; '%(i,ss,j))
+                ff.write('    coefs[%d] %s= b[%d];\n'%(i,ss,j))
         else:
             ind = sp_list.index(float(abs(cc)))
             if ss == ' ':
                 if cc > 0:
-                    ff.write('coefs[%d] = tri_consts[%d] * b[%d]; '%(i,ind,j))
+                    ff.write('    coefs[%d] = tri_consts[%d] * b[%d];\n'%(i,ind,j))
                 else:
-                    ff.write('coefs[%d] = -(tri_consts[%d] * b[%d]); '%(i,ind,j))
+                    ff.write('    coefs[%d] = -(tri_consts[%d] * b[%d]);\n'%(i,ind,j))
             else:
                 if cc > 0:
                     ss = '+'
                 else:
                     ss = '-'
                 #ff.write('coefs[%d] %s= b[%d]; '%(i,ss,j))
-                ff.write('coefs[%d] %s= tri_consts[%d] * b[%d]; '%(i,ss,ind,j))
-        flag = False
+                ff.write('    coefs[%d] %s= tri_consts[%d] * b[%d];\n'%(i,ss,ind,j))
+        flags[i] = 0
 #    print()
-    ff.write('\n')
+#    ff.write('\n')
 
 ff.write(
 '''
