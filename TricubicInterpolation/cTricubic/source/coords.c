@@ -6,9 +6,9 @@ void tricubic_coords_to_indices(double x, double y, double z, double x0, double 
     double fy = (y - y0)/dy;
     double fz = (z - z0)/dz;
 
-    *ix = (int)fx;
-    *iy = (int)fy;
-    *iz = (int)fz;
+    *ix = (int)(floor(fx));
+    *iy = (int)(floor(fy));
+    *iz = (int)(floor(fz));
 
     return;
 }
@@ -21,9 +21,9 @@ int tricubic_coords_to_indices_and_floats(double x, double y, double z, double x
     double fy = (y - y0)/dy;
     double fz = (z - z0)/dz;
 
-    *ix = (int)fx;
-    *iy = (int)fy;
-    *iz = (int)fz;
+    *ix = (int)(floor(fx));
+    *iy = (int)(floor(fy));
+    *iz = (int)(floor(fz));
 
     *xn = fx - *ix;
     *yn = fy - *iy;
