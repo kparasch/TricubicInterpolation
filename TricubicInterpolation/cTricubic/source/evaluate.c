@@ -147,7 +147,7 @@ double tricubic_ddydz(double* coefs, double* xn, double* yn, double* zn, double 
         {
             for(int k = 1; k < 4; k++)
             {
-                result += (j * k) * ( ( (coefs[i + 4 * j + 16 * k] * xn[i]) * yn[j-1]) * zn[k]);
+                result += (j * k) * ( ( (coefs[i + 4 * j + 16 * k] * xn[i]) * yn[j-1]) * zn[k-1]);
             }
         }
     }
