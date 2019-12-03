@@ -212,9 +212,9 @@ class Tricubic_Interpolation(object):
         fy = (sy*y - self.y0)/self.dy
         fz = (z - self.z0)/self.dz
 
-        ix = int(fx)
-        iy = int(fy)
-        iz = int(fz)
+        ix = int(np.floor(fx))
+        iy = int(np.floor(fy))
+        iz = int(np.floor(fz))
 
         return ix, iy, iz
 
@@ -265,9 +265,9 @@ class Tricubic_Interpolation(object):
         fy = (sy*y - self.y0)/self.dy
         fz = (z - self.z0)/self.dz
 
-        ix = int(fx)
-        iy = int(fy)
-        iz = int(fz)
+        ix = int(np.floor(fx))
+        iy = int(np.floor(fy))
+        iz = int(np.floor(fz))
 
         x1 = fx - ix
         y1 = fy - iy
