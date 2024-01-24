@@ -28,7 +28,7 @@ class Trilinear_Interpolation:
         n1 = A.shape[1] - 2 * d1
         n2 = A.shape[2] - 2 * d2
     
-        v = np.empty([n0,n1,n2,4],dtype=np.float64)
+        v = np.empty([n0,n1,n2,4],dtype=float)
     
         #f#############################################################
         v[:,:,:,0] =         A[d0  :n0+d0  ,d1  :n1+d1  ,d2  :n2+d2  ] 

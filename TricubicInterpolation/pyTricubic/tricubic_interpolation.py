@@ -105,7 +105,7 @@ class Tricubic_Interpolation(object):
                  self.dx*self.dy*self.dz
                 ]
 
-        b = np.empty([64],dtype=np.float64)
+        b = np.empty([64],dtype=float)
         
         for l in range(8):
             b[8*l+0] = self.A[ix  ,iy  ,iz  ,l]*scale[l]
@@ -121,7 +121,7 @@ class Tricubic_Interpolation(object):
 
 
     def finite_diff(self, ix, iy, iz):
-        b = np.empty([64],dtype=np.float64)
+        b = np.empty([64],dtype=float)
         
         b[ 0] = self.A[ix  ,iy  ,iz  ]
         b[ 1] = self.A[ix+1,iy  ,iz  ]
