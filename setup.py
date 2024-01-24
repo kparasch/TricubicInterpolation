@@ -24,7 +24,7 @@ module = Extension(extension_name,
 
 setup(
     name="TricubicInterpolation",
-    version="1.0.0",
+    version="1.1.0",
     author="Konstantinos Paraschou",
     author_email="konstantinos.paraschou@cern.ch",
     description="Tricubic Interpolation suited for Hamiltonian Particle Tracking written in C",
